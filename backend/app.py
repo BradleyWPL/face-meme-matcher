@@ -1,9 +1,16 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from services.firebase import db
 
-app = Flask(__name__)
+import os
+app = Flask(__name__, template_folder=os.path.join('..', 'templates'), static_folder=os.path.join('..', 'static'))
 CORS(app)
+
+from flask import Flask, render_template
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/api/health')
 def health():
