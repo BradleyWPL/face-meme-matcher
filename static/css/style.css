@@ -1,4 +1,13 @@
 /* Base styles - Hager builds on this */
+
+:root {
+
+    --main-color: #7950f3;
+    --bg-color: #190a28;
+    --text-color: white;
+
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,10 +16,23 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #0a1628;
-    color: white;
+    background-color: bg-color;
+    color: var(--text-color);
     text-align: center;
     padding: 20px;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.main-box {    background: var(--main-color);
+    border-radius: 12px;
+    padding: 50px;
+    width: 400px;
+    margin: 0 auto;
+    
 }
 
 .container {
@@ -21,7 +43,7 @@ body {
 }
 
 .panel {
-    background: #1a2a4a;
+    background: var(--main-color);
     border-radius: 12px;
     padding: 20px;
     width: 350px;
@@ -30,6 +52,7 @@ body {
 #video {
     width: 100%;
     border-radius: 8px;
+    border-color: orange;
 }
 
 #meme-display {
