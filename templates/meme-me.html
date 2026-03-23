@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Meme Matcher</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <h1>Face Meme Matcher</h1>
+
+    <!-- TOP: Camera + Meme Match -->
+    <div class="container">
+
+        <!-- LEFT: Live webcam -->
+        <div class="panel" id="camera-panel">
+            <h2>Your Camera</h2>
+            <video id="video" autoplay muted></video>
+        </div>
+
+        <!-- RIGHT: Matched meme -->
+        <div class="panel" id="meme-panel">
+            <h2>Your Meme Match</h2>
+            <img id="meme-display" src="" alt="Strike a pose!" />
+            <p id="meme-label" style="color:white; margin-top:10px; font-size:14px;"></p>
+            <button onclick="downloadSnapshot()" id="download-btn">⬇ Download Match</button>
+        </div>
+
+    </div>
+        <!-- BOTTOM: Meme gallery -->
+<div id="gallery-panel">
+    <h2>Pick Your Meme</h2>
+    <div id="gallery-carousel">
+        <button id="prev-btn" onclick="changeSlide(-1)">&#8249;</button>
+        <img id="gallery-display" src="/static/memes/squint_pucker.png" />
+        <button id="next-btn" onclick="changeSlide(1)">&#8250;</button>
+    </div>
+    <p id="gallery-label">squint pucker</p>
+</div>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="/static/js/app.js"></script>
+
+    
+
+</body>
+</html>
