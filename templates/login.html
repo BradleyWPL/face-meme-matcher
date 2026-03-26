@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Face Meme Matcher</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h1>Face Meme Matcher</h1>
+            <h2>Login</h2>
+
+            <div id="auth-error" class="auth-error hidden"></div>
+
+            <div class="auth-field">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Enter your email" />
+            </div>
+
+            <div class="auth-field">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter your password" />
+            </div>
+
+            <button class="auth-btn" onclick="handleLogin()">Login</button>
+
+            <!-- BYPASS for testing -->
+            <button class="auth-btn bypass-btn" onclick="bypassLogin()">
+                Quick Test Login (user: 1 / pass: 1)
+            </button>
+
+            <p class="auth-switch">
+                Don't have an account? 
+                <a href="/signup">Create Account</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="/static/js/firebase-config.js"></script>
+    <script src="/static/js/auth.js"></script>
+</body>
+</html>

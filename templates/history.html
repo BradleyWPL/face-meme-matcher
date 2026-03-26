@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme History — Face Meme Matcher</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<body>
+    <div class="history-wrapper">
+        <div class="history-header">
+            <h1>Face Meme Matcher</h1>
+            <div class="history-nav">
+                <span id="user-email-display"></span>
+                <button class="auth-btn small-btn" onclick="goBack()">← Back</button>
+                <button class="auth-btn small-btn logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <h2>Your Meme History</h2>
+        <p class="history-subtitle">All your saved meme matches</p>
+
+        <div id="history-grid">
+            <p id="loading-msg">Loading your memes...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="/static/js/firebase-config.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/history.js"></script>
+</body>
+</html>
