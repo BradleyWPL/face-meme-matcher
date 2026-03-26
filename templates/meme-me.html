@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Meme Me - Face Meme Matcher</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="main-container">
+        <h1> Meme Me — Face Meme Matcher 🎭😆 </h1>
+
+        <!-- THREE PANELS -->
+        <div class="top-row">
+
+            <div class ="main-container"></div>
+            <!-- LEFT: Live webcam -->
+            <div class="panel" id="camera-panel">
+                <h2>Your Camera</h2>
+                <video id="video" autoplay muted></video>
+            </div>
+            
+            <button class="button" id="download-button">Download</button>
+
+            <!-- MIDDLE: Matched meme -->
+            <div class="panel" id="meme-panel">
+                <h2>Your Meme Match</h2>
+                <img id="meme-display" src="" alt="Match a pose to see your meme!" />
+            </div>
+
+            </div>
+
+    
+        
+        <div class="card">
+            <h2> Pose for Meme – Select a Meme to get instructions</h2>
+            <p> Instructions will appear here once you select a meme. </p>
+
+        </div>
+
+        <div class="gallery-section">
+            <!-- RIGHT: Meme gallery -->
+            <div class="panel" id="gallery-panel">
+                <h2>Meme Gallery</h2>
+                <img id="meme-gallery" src="" alt="Gallery of memes" />
+            </div>
+            <div id="gallery"></div>
+        </div>
+        </div>
+    
+
+            <!-- Load face-api.js and app.js for meme matching functionality -->
+            <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+            <script src="/static/js/app.js"></script>
+
+         
+          
+            <div>
+                <a href="index.html"> ← Go Meme Me Home</a>
+            </div>
+            
+     </div>
+       
+
+       
+    
+</body>
+</html>
