@@ -1,4 +1,4 @@
 @echo off
-cd /d C:\Face-Meme-Matcher\face-meme-matcher\backend
-call venv\Scripts\activate
+cd /d C:\face-meme-matcher\backend
+call venv\Scripts\activate.bat
 python app.py
