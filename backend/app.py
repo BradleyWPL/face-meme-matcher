@@ -24,5 +24,17 @@ def test_firebase():
     doc_ref.set({"message": "Firebase connected!"})
     return {"status": "Firebase is working!"}
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@app.route('/history')
+def history():
+    return render_template('history.html')
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

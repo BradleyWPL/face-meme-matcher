@@ -151,3 +151,25 @@ h1 {
 #download-btn:hover {
     background: #8a7aed;
 }
+
+.top-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px 8px;
+}
+
+.nav-btn {
+    background: #6a5acd;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.nav-btn:hover { background: #8a7aed; }
+.logout-nav { background: #e53e3e; }
+.logout-nav:hover { background: #fc8181; }
