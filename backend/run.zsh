@@ -6,8 +6,10 @@ cd ~/Documents/dev/school/software-eng/face-meme-matcher/backend
 
 source venv/bin/activate
 
-python3 app.py
+python3 app.py &
 
-open http://localhost:5000/api/health
+sleep 2
+
+open http://127.0.0.1:5001
 
 echo "Meme Me Backend Server is running at http://localhost:5000"
