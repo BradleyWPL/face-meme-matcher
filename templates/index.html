@@ -3,43 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Meme Matcher</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-
+    <title>Meme Me - Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script></script>
 </head>
 <body>
 
-     <div class="main-container"></div>
+    <div class="main-container">
+
         <div class="card">
-            <h1 class="title">Welcome to Meme-Me!</h1>
+            <h1 class="title">Welcome to Meme Me</h1>
 
-            <img src="../static/resources/images/meme-me-logo.png" alt="Meme Me Logo - Bunch of color cute stylized faces, called joy coins" class="logo"/>
-
-
-            <h2>Meme me captures your expressions into memes!</h2>
-            
-            <p>Using your webcam, Meme Me detects your facial expressions using AI and matches them to funny memes! Download your personalized meme and share it with friends!</p>
-
-            <h3>To get started, we require your face camera!</h3>
-
-            <p>Click the button below to continue!</p>
-        
+            <img src="{{ url_for('static', filename='resources/images/meme-me-logo.png') }}" 
+                 alt="Meme Me Logo - Bunch of color cute stylized faces, called joy coins"  class="logo"/>
 
             
-            
+
+
+            <h2>Meme me is a fun & exciting application that captures your expressions into memes! Don't just create or consume memes!</h2>
+            <h3>Express yourself and share your unique meme creations with the world!</h3>
+            <p>To get started, we require face camera, click to continue!</p>
+
+            <br>
+
+            <a class="button" href="{{ url_for('meme_me') }}">Continue</a>
         </div>
 
-        <a href="{{ url_for('meme_me') }}">Continue</a>
+        <footer> Made with joy from Particularly Kool Joy Coders Team 😎 </footer>
+    </div>
 
-     <div class="main-container"></div>
-
-
-
-
-   
-    
 </body>
 </html>
-
-
-
