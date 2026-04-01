@@ -3,66 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Meme Me - Face Meme Matcher</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Meme Me — Face Meme Matcher 🎭😆</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="main-container">
-        <h1> Meme Me — Face Meme Matcher 🎭😆 </h1>
 
-        <!-- THREE PANELS -->
-        <div class="top-row">
+<div class="main-container">
 
-            <div class ="main-container"></div>
-            <!-- LEFT: Live webcam -->
-            <div class="panel" id="camera-panel">
-                <h2>Your Camera</h2>
-                <video id="video" autoplay muted></video>
-            </div>
-            
-            <button class="button" id="download-button">Download</button>
+    <h1>Meme Me — Face Meme Matcher 🎭😆</h1>
 
-            <!-- MIDDLE: Matched meme -->
-            <div class="panel" id="meme-panel">
-                <h2>Your Meme Match</h2>
-                <img id="meme-display" src="" alt="Match a pose to see your meme!" />
-            </div>
+    <!-- TOP NAV -->
+    <div class="top-nav">
+        <span id="nav-user"></span>
+        <button class="nav-btn" onclick="window.location.href='/history'">📸 Meme History</button>
+        <button class="nav-btn logout-nav" onclick="handleLogout()">Logout</button>
+    </div>
 
-            </div>
+    <!-- CAMERA + MEME PANEL ROW -->
+    <div class="top-row" style="align-items: flex-start; justify-content: center; gap: 20px;">
 
-    
-        
-        <div class="card">
-            <h2> Pose for Meme – Select a Meme to get instructions</h2>
-            <p> Instructions will appear here once you select a meme. </p>
-
+        <!-- LEFT: Camera -->
+        <div class="panel" id="camera-panel">
+            <h2>Your Camera</h2>
+            <video id="video" autoplay muted></video>
         </div>
 
-        <div class="gallery-section">
-            <!-- RIGHT: Meme gallery -->
-            <div class="panel" id="gallery-panel">
-                <h2>Meme Gallery</h2>
-                <img id="meme-gallery" src="" alt="Gallery of memes" />
-            </div>
-            <div id="gallery"></div>
+        <!-- MIDDLE: Download Button -->
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <button onclick="downloadSnapshot()" id="download-btn">⬇ Download Match</button>
         </div>
+
+        <!-- RIGHT: Meme -->
+        <div class="panel" id="meme-panel">
+            <h2>Your Meme Match</h2>
+            <img id="meme-display" src="" alt="Match a pose to see your meme!" />
+            <p id="meme-label" style="color:white; margin-top:10px; font-size:14px;"></p>
         </div>
-    
 
-            <!-- Load face-api.js and app.js for meme matching functionality -->
-            <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-            <script src="/static/js/app.js"></script>
+    </div>
 
-         
-          
-            <div>
-                <a href="index.html"> ← Go Meme Me Home</a>
-            </div>
-            
-     </div>
-       
+    <!-- INSTRUCTIONS -->
+    <div class="card">
+        <h2>Pose for Meme – Select a Meme to get instructions</h2>
+        <p id="instructions-text">Instructions will appear here once you select a meme.</p>
+    </div>
 
-       
-    
+    <!-- BOTTOM: Meme Gallery -->
+    <div id="gallery-panel">
+        <h2>Pick Your Meme</h2>
+        <div id="gallery-carousel">
+            <button id="prev-btn" onclick="changeSlide(-1)">&#8249;</button>
+            <img id="gallery-display" src="{{ url_for('static', filename='memes/squint_pucker.png') }}" />
+            <button id="next-btn" onclick="changeSlide(1)">&#8250;</button>
+        </div>
+        <p id="gallery-label">squint pucker</p>
+    </div>
+
+    <!-- BACK HOME LINK -->
+    <div>
+        <a href="{{ url_for('index') }}">← Go Meme Me Home</a>
+    </div>
+
+    <footer> Made with joy from Particularly Kool Joy Coders Team 😎 </footer>
+
+
+</div>
+
+<!-- Firebase JS -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+<script src="{{ url_for('static', filename='js/firebase-config.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
+<!-- Face API + App JS -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
 </body>
 </html>
