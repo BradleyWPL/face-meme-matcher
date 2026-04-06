@@ -3,32 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme History — Face Meme Matcher</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/auth.css">
+    <title>Meme History — Meme Me 🎭</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%; width: 100%;
+            /* History page IS allowed to scroll */
+            background: #12102a;
+            font-family: 'Nunito', sans-serif;
+            color: #fff;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse at 10% 30%, rgba(106,53,216,0.2) 0%, transparent 55%),
+                radial-gradient(ellipse at 90% 70%, rgba(245,166,35,0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* ── HEADER ── */
+        .history-header {
+            position: sticky; top: 0; z-index: 10;
+            background: rgba(18,16,42,0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-brand {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .header-right {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        }
+
+        #user-email-display {
+            font-size: 0.8rem; color: rgba(255,255,255,0.5);
+            font-weight: 600; max-width: 180px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        .nav-btn {
+            padding: 7px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 10px; color: #fff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.82rem; font-weight: 700;
+            cursor: pointer; transition: background 0.2s, transform 0.15s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.18); transform: translateY(-1px); }
+
+        .logout-btn {
+            background: rgba(255,80,80,0.15);
+            border-color: rgba(255,80,80,0.35);
+            color: #ffaaaa;
+        }
+        .logout-btn:hover { background: rgba(255,80,80,0.28); }
+
+        /* ── PAGE BODY ── */
+        .history-wrapper {
+            max-width: 1000px; margin: 0 auto;
+            padding: 32px 24px 48px;
+        }
+
+        .history-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem; color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .history-subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem; font-weight: 600;
+            margin-bottom: 28px;
+        }
+
+        /* ── GRID ── */
+        #history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .history-card {
+            background: #6a35d8;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeIn 0.35s ease both;
+        }
+        .history-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .history-card img {
+            width: 100%; aspect-ratio: 2/1;
+            object-fit: cover; display: block;
+        }
+
+        .history-card-info {
+            padding: 12px 14px 14px;
+        }
+
+        .history-card-info p {
+            font-weight: 800; font-size: 0.95rem;
+            color: #fff; margin-bottom: 4px;
+        }
+
+        .history-card-info small {
+            font-size: 0.75rem; color: rgba(255,255,255,0.55);
+            font-weight: 600;
+        }
+
+        /* ── EMPTY / ERROR STATES ── */
+        .state-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px 24px;
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem; font-weight: 600;
+        }
+
+        .state-msg span { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.28);
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Sticky header -->
+    <div class="history-header">
+        <div class="header-brand">🎭 Meme Me</div>
+        <div class="header-right">
+            <span id="user-email-display"></span>
+            <button class="nav-btn" onclick="goBack()">← Back</button>
+            <button class="nav-btn logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Page content -->
     <div class="history-wrapper">
-        <div class="history-header">
-            <h1>Face Meme Matcher</h1>
-            <div class="history-nav">
-                <span id="user-email-display"></span>
-                <button class="auth-btn small-btn" onclick="goBack()">← Back</button>
-                <button class="auth-btn small-btn logout-btn" onclick="handleLogout()">Logout</button>
+        <h2 class="history-title">Your Meme History</h2>
+        <p class="history-subtitle">All your saved meme matches, newest first</p>
+
+        <div id="history-grid">
+            <div class="state-msg">
+                <span>⏳</span>
+                Loading your memes…
             </div>
         </div>
 
-        <h2>Your Meme History</h2>
-        <p class="history-subtitle">All your saved meme matches</p>
-
-        <div id="history-grid">
-            <p id="loading-msg">Loading your memes...</p>
-        </div>
-
-        <footer> Made with joy from Particularly Kool Joy Coders Team 😎 </footer>
-
+        <footer>Made with joy from Particularly Kool Joy Coders Team 😎</footer>
     </div>
 
+    <!-- Firebase SDKs — Storage SDK is REQUIRED for history image URLs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>

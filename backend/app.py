@@ -24,7 +24,10 @@ def index():
 
 @app.route('/meme-me')
 def meme_me():
-    # meme-me page where AI does stuff
+    return render_template('meme-me.html')
+
+@app.route('/meme-me.html')
+def meme_me_html():
     return render_template('meme-me.html')
 
 @app.route('/login')

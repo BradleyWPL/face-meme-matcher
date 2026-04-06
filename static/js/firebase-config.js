@@ -4,7 +4,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBEUYfN77dXMNNCfmBhIm3VQIGX59ogviM",
   authDomain: "face-meme-matcher.firebaseapp.com",
   projectId: "face-meme-matcher",
-  storageBucket: "face-meme-matcher.firebasestorage.app",
+  storageBucket: "face-meme-matcher.appspot.com",
   messagingSenderId: "882025482874",
   appId: "1:882025482874:web:371c3813a1c1690c1649c3",
   measurementId: "G-36EZ5WSS28"

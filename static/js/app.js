@@ -244,3 +244,56 @@ function changeSlide(direction) {
   await runDetection();
   console.log("Face Meme Matcher running ✅");
 })();
+
+
+async function downloadSnapshot() {
+  const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+
+  const snapCanvas = document.createElement('canvas');
+  snapCanvas.width  = video.videoWidth * 2;
+  snapCanvas.height = video.videoHeight;
+  const ctx = snapCanvas.getContext('2d');
+
+  ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+  const memeName = memeLabel ? memeLabel.textContent : 'Unknown';
+
+  if (memeDisplay.src && memeDisplay.naturalWidth > 0) {
+    ctx.drawImage(memeDisplay, video.videoWidth, 0, video.videoWidth, video.videoHeight);
+  } else {
+    ctx.fillStyle = '#6a5acd';
+    ctx.fillRect(video.videoWidth, 0, video.videoWidth, video.videoHeight);
+    ctx.fillStyle = 'white';
+    ctx.font = '32px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('No match yet!', video.videoWidth * 1.5, video.videoHeight / 2);
+  }
+
+  // Always trigger local download
+  const link = document.createElement('a');
+  link.download = 'meme-match.png';
+  link.href = snapCanvas.toDataURL('image/png');
+  link.click();
+
+  // Save to Firebase if logged in (not bypass)
+  if (user && !user.bypass) {
+    try {
+      const blob = await new Promise(resolve => snapCanvas.toBlob(resolve, 'image/png'));
+      const filename = `memeHistory/${user.uid}/${Date.now()}.png`;
+      const ref = storage.ref(filename);
+      await ref.put(blob);
+      const imageUrl = await ref.getDownloadURL();
+
+      await db.collection('users').doc(user.uid)
+        .collection('memeHistory').add({
+          memeName: memeName,
+          imageUrl: imageUrl,
+          savedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+      console.log('Saved to meme history ✅');
+    } catch (err) {
+      console.error('Save failed:', err);
+    }
+  }
+}
