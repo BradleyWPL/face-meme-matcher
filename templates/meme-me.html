@@ -3,79 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Me — Face Meme Matcher 🎭😆</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Meme Me — Face Meme Matcher 🎭</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ── RESET: ZERO SCROLL ─────────────────────────────────────── */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;         /* NO scroll — horizontal OR vertical */
+            background: #2a1f6e;
+            font-family: 'Nunito', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* subtle radial glow in background */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse at 15% 50%, rgba(106,53,216,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 50%, rgba(106,53,216,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 0%,  rgba(245,166,35,0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── HEADER ─────────────────────────────────────────────────── */
+        .header {
+            flex-shrink: 0;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background: rgba(18, 14, 56, 0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            position: relative; z-index: 10;
+        }
+
+        .header-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        #nav-user {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.45);
+            font-weight: 600;
+            max-width: 160px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        .hdr-btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.78rem; font-weight: 700;
+            cursor: pointer;
+            border: 1.5px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .hdr-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-1px); }
+        .hdr-btn.logout { border-color: rgba(255,80,80,0.4); color: #ffaaaa; background: rgba(255,80,80,0.12); }
+        .hdr-btn.logout:hover { background: rgba(255,80,80,0.25); }
+
+        /* ── MAIN AREA — fills remaining height ─────────────────────── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative; z-index: 1;
+            padding: 10px 14px 8px;
+            gap: 8px;
+        }
+
+        /* ── TOP ROW: Camera | Controls | Meme ──────────────────────── */
+        .top-row {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 160px 1fr;
+            gap: 12px;
+            min-height: 0;  /* allows flex children to shrink */
+        }
+
+        /* ── PANEL (shared by camera + meme) ────────────────────────── */
+        .panel {
+            background: rgba(255,255,255,0.07);
+            border: 1.5px solid rgba(255,255,255,0.13);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px 10px 8px;
+            overflow: hidden;
+            backdrop-filter: blur(6px);
+            position: relative;
+        }
+
+        .panel-label {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: #f5a623;
+            margin-bottom: 6px;
+            flex-shrink: 0;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── VIDEO ───────────────────────────────────────────────────── */
+        #camera-panel {
+            position: relative; /* for canvas overlay */
+        }
+
+        #video {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            object-fit: cover;
+            border-radius: 10px;
+            display: block;
+            background: #000;
+        }
+
+        /* HIDE the face landmark canvas — we detect but don't show dots */
+        #landmark-canvas {
+            display: none !important;
+        }
+
+        /* ── MEME DISPLAY ────────────────────────────────────────────── */
+        #meme-display {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            object-fit: contain;
+            border-radius: 10px;
+            display: block;
+            transition: opacity 0.25s;
+        }
+
+        #meme-display[src=""] {
+            opacity: 0.3;
+        }
+
+        #meme-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            margin-top: 5px;
+            flex-shrink: 0;
+            text-align: center;
+            min-height: 18px;
+        }
+
+        /* ── CENTER CONTROLS COLUMN ──────────────────────────────────── */
+        .controls-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .ctrl-btn {
+            width: 140px;
+            padding: 13px 8px;
+            border-radius: 14px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        #download-btn {
+            background: #f5a623;
+            color: #1a1040;
+            box-shadow: 0 4px 18px rgba(245,166,35,0.4);
+        }
+        #download-btn:hover  { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.55); }
+        #download-btn:active { transform: translateY(0); }
+        #download-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        #history-btn {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            border: 1.5px solid rgba(255,255,255,0.25);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+        }
+        #history-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        #history-btn:active { transform: translateY(0); }
+
+        .match-status {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            line-height: 1.4;
+        }
+        .match-status.active { color: #7fff7f; }
+
+        /* ── BOTTOM STRIP: Instructions + Gallery ───────────────────── */
+        .bottom-strip {
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            height: 80px;
+        }
+
+        .instructions-box {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6px 14px;
+        }
+
+        .instructions-box .box-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.7rem;
+            color: #f5a623;
+            margin-bottom: 2px;
+        }
+
+        #instructions-text {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 600;
+            line-height: 1.4;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Gallery */
+        .gallery-box {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 10px;
+        }
+
+        .gallery-box .box-title {
+            display: none; /* hidden in compact mode */
+        }
+
+        .gal-arrow {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; font-size: 1rem;
+            cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .gal-arrow:hover { background: rgba(255,255,255,0.3); }
+
+        .gallery-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            flex: 1;
+        }
+
+        #gallery-display {
+            height: 48px;
+            width: auto;
+            max-width: 80px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        #gallery-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.65);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="main-container">
-
-    <h1>Meme Me — Face Meme Matcher 🎭😆</h1>
-
-    <!-- TOP NAV -->
-    <div class="top-nav">
+<!-- ── HEADER ──────────────────────────────────────── -->
+<div class="header">
+    <div class="header-title">🎭 Meme Me</div>
+    <div class="header-right">
         <span id="nav-user"></span>
-        <button class="nav-btn" onclick="window.location.href='/history'">📸 Meme History</button>
-        <button class="nav-btn logout-nav" onclick="handleLogout()">Logout</button>
+        <span id="joy-coins-display" style="font-family:'Fredoka One',cursive; font-size:0.95rem; color:#f5a623; background:rgba(245,166,35,0.15); border:1px solid rgba(245,166,35,0.3); padding:4px 12px; border-radius:20px;">🪙 0</span>
+        <button class="hdr-btn" onclick="startGame()" style="background:rgba(245,166,35,0.2); border-color:rgba(245,166,35,0.5); color:#f5a623; font-weight:800;">🎮 Game Mode</button>
+        <button class="hdr-btn" onclick="window.location.href='/history'">📸 History</button>
+        <button class="hdr-btn logout" onclick="handleLogout()">Logout</button>
     </div>
-
-    <!-- CAMERA + MEME PANEL ROW -->
-    <div class="top-row" style="align-items: flex-start; justify-content: center; gap: 20px;">
-
-        <!-- LEFT: Camera -->
-        <div class="panel" id="camera-panel">
-            <h2>Your Camera</h2>
-            <video id="video" autoplay muted></video>
-        </div>
-
-        <!-- MIDDLE: Download Button -->
-        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <button onclick="downloadSnapshot()" id="download-btn">⬇ Download Match</button>
-        </div>
-
-        <!-- RIGHT: Meme -->
-        <div class="panel" id="meme-panel">
-            <h2>Your Meme Match</h2>
-            <img id="meme-display" src="" alt="Match a pose to see your meme!" />
-            <p id="meme-label" style="color:white; margin-top:10px; font-size:14px;"></p>
-        </div>
-
-    </div>
-
-    <!-- INSTRUCTIONS -->
-    <div class="card">
-        <h2>Pose for Meme – Select a Meme to get instructions</h2>
-        <p id="instructions-text">Instructions will appear here once you select a meme.</p>
-    </div>
-
-    <!-- BOTTOM: Meme Gallery -->
-    <div id="gallery-panel">
-        <h2>Pick Your Meme</h2>
-        <div id="gallery-carousel">
-            <button id="prev-btn" onclick="changeSlide(-1)">&#8249;</button>
-            <img id="gallery-display" src="{{ url_for('static', filename='memes/squint_pucker.png') }}" />
-            <button id="next-btn" onclick="changeSlide(1)">&#8250;</button>
-        </div>
-        <p id="gallery-label">squint pucker</p>
-    </div>
-
-    <!-- BACK HOME LINK -->
-    <div>
-        <a href="{{ url_for('index') }}">← Go Meme Me Home</a>
-    </div>
-
-    <footer> Made with joy from Particularly Kool Joy Coders Team 😎 </footer>
-
-
 </div>
 
-<!-- Firebase JS -->
+<!-- ── GAME OVERLAY ─────────────────────────── -->
+<div id="game-overlay" style="display:none; position:fixed; inset:0; background:rgba(20,10,60,0.92); z-index:100; flex-direction:column; align-items:center; justify-content:center; gap:16px;">
+    <div id="game-countdown" style="font-family:'Fredoka One',cursive; font-size:5rem; color:#f5a623;"></div>
+    <div id="game-prompt" style="font-family:'Fredoka One',cursive; font-size:2.2rem; color:#fff; text-align:center; padding:0 20px;"></div>
+    <div id="game-timer-bar-wrap" style="width:320px; height:10px; background:rgba(255,255,255,0.15); border-radius:8px; overflow:hidden; display:none;">
+        <div id="game-timer-bar" style="height:100%; width:100%; background:#f5a623; border-radius:8px; transition:width linear;"></div>
+    </div>
+    <div id="game-score-display" style="font-size:1.1rem; color:rgba(255,255,255,0.6); font-weight:700;"></div>
+</div>
+
+<!-- ── GAME END MODAL ───────────────────────── -->
+<div id="game-end-modal" style="display:none; position:fixed; inset:0; background:rgba(20,10,60,0.95); z-index:101; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+    <div style="font-family:'Fredoka One',cursive; font-size:2rem; color:#f5a623;">Game Over!</div>
+    <div id="end-score" style="font-size:1.4rem; color:#fff; font-weight:800;"></div>
+    <div id="end-coins" style="font-size:1.1rem; color:#f5a623; font-weight:700;"></div>
+    <div id="total-coins-display" style="font-size:0.95rem; color:rgba(255,255,255,0.6);"></div>
+    <button onclick="closeGameEnd()" style="margin-top:10px; padding:12px 32px; background:#6a35d8; color:#fff; border:none; border-radius:12px; font-size:1rem; font-weight:800; cursor:pointer; font-family:'Nunito',sans-serif;">Play Again</button>
+</div>
+
+<!-- ── MAIN ────────────────────────────────────────── -->
+<div class="main">
+
+    <!-- TOP ROW: Camera | Controls | Meme -->
+    <div class="top-row">
+
+        <!-- CAMERA PANEL -->
+        <div class="panel" id="camera-panel">
+            <div class="panel-label">Your Camera</div>
+            <video id="video" autoplay muted playsinline></video>
+            <!-- landmark canvas is hidden by CSS — detection still runs -->
+        </div>
+
+        <!-- CENTER CONTROLS -->
+        <div class="controls-col">
+            <button class="ctrl-btn" id="download-btn" onclick="downloadSnapshot()">
+                ⬇ Download<br>Match
+            </button>
+            <button class="ctrl-btn" id="history-btn" onclick="window.location.href='/history'">
+                📸 Meme<br>History
+            </button>
+            <div class="match-status" id="match-status">Detecting…</div>
+        </div>
+
+        <!-- MEME PANEL -->
+        <div class="panel" id="meme-panel">
+            <div class="panel-label">Your Meme Match</div>
+            <img id="meme-display" src="" alt="Match a pose!" />
+            <p id="meme-label">Strike a pose!</p>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM STRIP: Instructions | Gallery -->
+    <div class="bottom-strip">
+
+        <div class="instructions-box">
+            <div class="box-title">How to Pose</div>
+            <p id="instructions-text">Instructions will appear here once you select a meme from the gallery →</p>
+        </div>
+
+        <div class="gallery-box">
+            <button class="gal-arrow" onclick="changeSlide(-1)">&#8249;</button>
+            <div class="gallery-center">
+                <img id="gallery-display" src="{{ url_for('static', filename='memes/squint_pucker.png') }}" alt="meme" />
+                <span id="gallery-label">Squint Pucker</span>
+            </div>
+            <button class="gal-arrow" onclick="changeSlide(1)">&#8250;</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 <script src="{{ url_for('static', filename='js/firebase-config.js') }}"></script>
 <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
+<!-- Show logged-in user email in header -->
+<script>
+    (function() {
+        const u = JSON.parse(sessionStorage.getItem('user') || 'null');
+        if (u && u.email) {
+            document.getElementById('nav-user').textContent = u.email;
+        }
+    })();
+</script>
 
 <!-- Face API + App JS -->
 <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
