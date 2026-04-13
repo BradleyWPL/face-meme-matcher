@@ -1,3 +1,9 @@
+// ── auth.js ───────────────────────────────────────────────────────────────
+// KEY FIX: Firebase Firestore security rules use request.auth on the SERVER.
+// For request.auth to be non-null, the browser must have an active Firebase
+// Auth session — not just a sessionStorage entry. This file sets persistence
+// to LOCAL so the auth token survives page navigations and browser refreshes.
+
 // ── BYPASS LOGIN ──────────────────────────────
 function bypassLogin() {
   sessionStorage.setItem('user', JSON.stringify({ email: 'test@user.com', uid: 'bypass-user', bypass: true }));
@@ -14,17 +20,20 @@ async function handleLogin() {
     return;
   }
 
-  // Show loading state
   const btn = document.querySelector('.auth-btn:not(.bypass-btn)');
   if (btn) { btn.textContent = 'Logging in…'; btn.disabled = true; }
 
   try {
+    // ✅ LOCAL persistence = auth token survives page navigations
+    // This makes request.auth work in Firestore security rules
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
     const result = await auth.signInWithEmailAndPassword(email, password);
     const user = result.user;
     sessionStorage.setItem('user', JSON.stringify({ email: user.email, uid: user.uid }));
     window.location.href = 'http://localhost:5001/meme-me.html';
   } catch (err) {
-    console.error('Login error code:', err.code); // DEV: shows raw code in console
+    console.error('Login error code:', err.code);
     showError(friendlyError(err.code));
     if (btn) { btn.textContent = 'Login'; btn.disabled = false; }
   }
@@ -61,6 +70,8 @@ async function handleSignup() {
   if (btn) { btn.textContent = 'Creating account…'; btn.disabled = true; }
 
   try {
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
     const result = await auth.createUserWithEmailAndPassword(email, password);
     const user = result.user;
     await db.collection('users').doc(user.uid).set({
@@ -83,14 +94,33 @@ async function handleLogout() {
   window.location.href = 'http://localhost:5001/login';
 }
 
-// ── GUARD — redirect if not logged in ─────────
+// ── GUARD — checks both sessionStorage AND Firebase Auth ──────────────────
 function requireAuth() {
-  const user = sessionStorage.getItem('user');
-  if (!user) {
+  const stored = sessionStorage.getItem('user');
+  if (!stored) {
     window.location.href = 'http://localhost:5001/login';
     return null;
   }
-  return JSON.parse(user);
+  const user = JSON.parse(stored);
+
+  // Watch for Firebase Auth session expiry (keeps rules working)
+  if (!user.bypass) {
+    auth.onAuthStateChanged(firebaseUser => {
+      if (!firebaseUser) {
+        console.warn('Firebase Auth session expired — redirecting to login.');
+        sessionStorage.removeItem('user');
+        window.location.href = 'http://localhost:5001/login';
+      } else {
+        // Keep sessionStorage fresh with latest auth info
+        sessionStorage.setItem('user', JSON.stringify({
+          email: firebaseUser.email,
+          uid:   firebaseUser.uid
+        }));
+      }
+    });
+  }
+
+  return user;
 }
 
 function goBack() {
@@ -108,21 +138,17 @@ function showError(msg) {
 
 function friendlyError(code) {
   const map = {
-    // Modern Firebase v9+ codes (what you're actually getting now)
     'auth/invalid-credential':         'Incorrect email or password. Please try again.',
     'auth/invalid-login-credentials':  'Incorrect email or password. Please try again.',
-    // Legacy codes (kept for safety)
     'auth/user-not-found':             'No account found with that email.',
     'auth/wrong-password':             'Incorrect password. Please try again.',
-    // Common errors
     'auth/email-already-in-use':       'An account with this email already exists.',
     'auth/invalid-email':              'Please enter a valid email address.',
     'auth/weak-password':              'Password must be at least 6 characters.',
     'auth/too-many-requests':          'Too many attempts. Please wait a moment and try again.',
     'auth/network-request-failed':     'Network error — check your internet connection.',
-    'auth/user-disabled':              'This account has been disabled. Contact support.',
+    'auth/user-disabled':              'This account has been disabled.',
     'auth/operation-not-allowed':      'Email/password login is not enabled. Contact support.',
   };
-  // In dev, raw code shows in console. This message is user-friendly.
   return map[code] || 'Something went wrong. Please try again.';
 }

@@ -1,7 +1,6 @@
 // ── script.js ─────────────────────────────────────────────────────────────
 // Handles download button + Firebase save for the meme-me page.
-// NOTE: firebase-config.js must be loaded before this file so that
-//       `auth`, `db`, and `storage` globals are available.
+// firebase-config.js must load before this so auth, db, storage are available.
 
 const downloadButton = document.getElementById('download-button');
 if (downloadButton) {
@@ -10,84 +9,127 @@ if (downloadButton) {
 
 // ── DOWNLOAD + SAVE TO FIREBASE ───────────────────────────────────────────
 async function downloadSnapshot() {
-  // Grab elements that live on meme-me.html
-  const video       = document.getElementById('video');        // <video> element
-  const memeDisplay = document.getElementById('meme-display'); // <img> showing matched meme
-  const memeLabel   = document.getElementById('meme-label');   // <p>/<span> with meme name
+  const video       = document.getElementById('video');
+  const memeDisplay = document.getElementById('meme-display');
+  const memeLabel   = document.getElementById('meme-label');
 
+  // Guard: video must exist and have real dimensions
   if (!video) {
-    console.error('downloadSnapshot: #video element not found on this page.');
+    console.error('downloadSnapshot: #video element not found.');
+    alert('Camera not ready. Please allow camera access and try again.');
+    return;
+  }
+
+  const w = video.videoWidth;
+  const h = video.videoHeight;
+
+  if (!w || !h) {
+    console.error('downloadSnapshot: video has no dimensions. w=' + w + ' h=' + h);
+    alert('Camera is still loading — wait a moment and try again.');
     return;
   }
 
   const user = JSON.parse(sessionStorage.getItem('user') || 'null');
-
-  // ── 1. Build the side-by-side canvas (webcam | meme) ──────────────────
-  const snapCanvas = document.createElement('canvas');
-  snapCanvas.width  = video.videoWidth * 2;
-  snapCanvas.height = video.videoHeight;
-  const ctx = snapCanvas.getContext('2d');
-
-  // Left half = webcam frame
-  ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-
   const memeName = memeLabel ? memeLabel.textContent.trim() : 'Unknown';
 
-  // Right half = meme image (or fallback purple panel)
+  // ── 1. Build side-by-side canvas ──────────────────────────────────────
+  const snapCanvas = document.createElement('canvas');
+  snapCanvas.width  = w * 2;
+  snapCanvas.height = h;
+  const ctx = snapCanvas.getContext('2d');
+
+  // Left half = webcam
+  ctx.drawImage(video, 0, 0, w, h);
+
+  // Right half = matched meme or purple fallback
   if (memeDisplay && memeDisplay.src && memeDisplay.naturalWidth > 0) {
-    ctx.drawImage(memeDisplay, video.videoWidth, 0, video.videoWidth, video.videoHeight);
+    ctx.drawImage(memeDisplay, w, 0, w, h);
   } else {
     ctx.fillStyle = '#6a35d8';
-    ctx.fillRect(video.videoWidth, 0, video.videoWidth, video.videoHeight);
+    ctx.fillRect(w, 0, w, h);
     ctx.fillStyle = 'white';
-    ctx.font = '32px Arial';
+    ctx.font = `${Math.floor(h * 0.06)}px Arial`;
     ctx.textAlign = 'center';
-    ctx.fillText('No match yet!', video.videoWidth * 1.5, video.videoHeight / 2);
+    ctx.fillText('No match yet!', w * 1.5, h / 2);
   }
 
-  // ── 2. Always download locally ─────────────────────────────────────────
+  // ── 2. Always trigger local download first ────────────────────────────
+  const timestamp = Date.now();
   const link = document.createElement('a');
-  link.download = `meme-match-${Date.now()}.png`;
+  link.download = `meme-match-${timestamp}.png`;
   link.href = snapCanvas.toDataURL('image/png');
   link.click();
 
-  // ── 3. Save to Firebase Storage + Firestore (real users only) ──────────
+  // ── 3. Save to Firebase (real logged-in users only) ────────────────────
   if (!user || user.bypass) {
-    console.log('Bypass/no user — skipping Firebase save.');
+    console.log('Bypass/no session — skipping Firebase save.');
     return;
   }
 
+  if (downloadButton) {
+    downloadButton.textContent = '⏳ Saving…';
+    downloadButton.disabled = true;
+  }
+
   try {
-    // Convert canvas → Blob
+    // Canvas → Blob
     const blob = await new Promise((resolve, reject) => {
-      snapCanvas.toBlob(b => b ? resolve(b) : reject(new Error('Canvas toBlob failed')), 'image/png');
+      snapCanvas.toBlob(
+        b => b ? resolve(b) : reject(new Error('Canvas toBlob returned null')),
+        'image/png'
+      );
     });
 
-    // Upload to Firebase Storage: memeHistory/{uid}/{timestamp}.png
-    const filename = `memeHistory/${user.uid}/${Date.now()}.png`;
-    const ref = storage.ref().child(filename);
-    await ref.put(blob);
-    const imageUrl = await ref.getDownloadURL();
+    console.log('Blob ready, size:', blob.size, 'bytes');
 
-    // Save metadata to Firestore: users/{uid}/memeHistory/{auto-id}
-    await db.collection('users').doc(user.uid)
-      .collection('memeHistory').add({
-        memeName:  memeName,
-        imageUrl:  imageUrl,
-        savedAt:   firebase.firestore.FieldValue.serverTimestamp()
+    // Upload to Firebase Storage: memeHistory/{uid}/{timestamp}.png
+    const storagePath = `memeHistory/${user.uid}/${timestamp}.png`;
+    const storageRef = storage.ref().child(storagePath);
+    await storageRef.put(blob, { contentType: 'image/png' });
+    const imageUrl = await storageRef.getDownloadURL();
+
+    console.log('Upload done. URL:', imageUrl.substring(0, 80) + '…');
+
+    // Write to Firestore: users/{uid}/memeHistory
+    // NOTE: field names must EXACTLY match what history.js reads (imageUrl, memeName, savedAt)
+    await db.collection('users')
+      .doc(user.uid)
+      .collection('memeHistory')
+      .add({
+        memeName: memeName,
+        imageUrl: imageUrl,
+        savedAt:  firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-    console.log('✅ Meme saved to Firebase history!');
+    console.log('✅ Firestore record saved to users/' + user.uid + '/memeHistory');
 
-    // Optional: brief visual feedback on the button
     if (downloadButton) {
-      const original = downloadButton.textContent;
       downloadButton.textContent = '✅ Saved!';
-      setTimeout(() => { downloadButton.textContent = original; }, 2000);
+      setTimeout(() => {
+        downloadButton.textContent = '📸 Download';
+        downloadButton.disabled = false;
+      }, 2500);
     }
 
   } catch (err) {
-    console.error('❌ Firebase save failed:', err);
-    // Don't block the user — local download already happened
+    console.error('❌ Firebase save failed — code:', err.code, '— message:', err.message);
+
+    // Tell the user what went wrong
+    let hint = err.message;
+    if (err.code === 'storage/unauthorized') {
+      hint = 'Storage permission denied. Update Firebase Storage rules (see README).';
+    } else if (err.code === 'permission-denied') {
+      hint = 'Firestore permission denied. Check your Firestore security rules.';
+    }
+
+    alert('Downloaded locally ✅\nCloud save failed ❌: ' + hint);
+
+    if (downloadButton) {
+      downloadButton.textContent = '⚠️ Cloud save failed';
+      setTimeout(() => {
+        downloadButton.textContent = '📸 Download';
+        downloadButton.disabled = false;
+      }, 3000);
+    }
   }
 }

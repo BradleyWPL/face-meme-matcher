@@ -1,16 +1,17 @@
 // history.js — Load and display meme history for the logged-in user
+// KEY FIX: Wait for Firebase Auth state to be confirmed before querying
+// Firestore — otherwise request.auth is null and rules deny the read.
+
 
 async function loadHistory() {
-  const user = requireAuth(); // redirects to /login if not logged in
+  const user = requireAuth();
   if (!user) return;
 
-  // Show the user's email in the header
   const emailEl = document.getElementById('user-email-display');
   if (emailEl) emailEl.textContent = user.email;
 
   const grid = document.getElementById('history-grid');
 
-  // Bypass users have no real Firebase account — show friendly message
   if (user.bypass) {
     grid.innerHTML = `
       <div class="state-msg">
@@ -20,9 +21,37 @@ async function loadHistory() {
     return;
   }
 
+  // ✅ CRITICAL FIX: Wait for Firebase Auth to confirm the session
+  // before making any Firestore request. Without this, request.auth
+  // is null when the page first loads, causing permission-denied errors.
+  await new Promise(resolve => {
+    const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
+      unsubscribe(); // stop listening after first event
+
+      if (!firebaseUser) {
+        // Auth session truly gone — redirect to login
+        sessionStorage.removeItem('user');
+        window.location.href = 'http://localhost:5001/login';
+        return;
+      }
+
+      // Sync uid from Firebase Auth (most reliable source of truth)
+      sessionStorage.setItem('user', JSON.stringify({
+        email: firebaseUser.email,
+        uid:   firebaseUser.uid
+      }));
+
+      resolve();
+    });
+  });
+
+  // Re-read user from sessionStorage now that it's confirmed fresh
+  const confirmedUser = JSON.parse(sessionStorage.getItem('user'));
+
   try {
-    const snapshot = await db.collection('users')
-      .doc(user.uid)
+    const snapshot = await db
+      .collection('users')
+      .doc(confirmedUser.uid)
       .collection('memeHistory')
       .orderBy('savedAt', 'desc')
       .get();
@@ -36,30 +65,37 @@ async function loadHistory() {
       return;
     }
 
-    grid.innerHTML = ''; // clear loading state
+    grid.innerHTML = '';
 
     snapshot.forEach((doc, i) => {
       const data = doc.data();
 
-      // Format date safely (savedAt may be null if server timestamp hasn't resolved)
+      // Support both field name spellings
+      const imgSrc   = data.imageUrl || data.Image_URL || data.image_url || '';
+      const memeName = data.memeName || data.meme_name || 'Unknown meme';
+
       let dateStr = 'Just now';
       if (data.savedAt) {
         try {
           dateStr = new Date(data.savedAt.toDate()).toLocaleDateString('en-US', {
             month: 'short', day: 'numeric', year: 'numeric'
           });
-        } catch (_) { /* keep default */ }
+        } catch (_) {}
       }
 
       const card = document.createElement('div');
       card.className = 'history-card';
-      card.style.animationDelay = `${i * 0.06}s`; // staggered reveal
+      card.style.animationDelay = `${i * 0.06}s`;
 
       card.innerHTML = `
-        <img src="${data.imageUrl}" alt="${data.memeName || 'Meme match'}"
-             onerror="this.src=''; this.style.display='none'" />
+        ${imgSrc ? `<img src="${imgSrc}" alt="${memeName}"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />` : ''}
+        <div class="img-placeholder" style="display:${imgSrc ? 'none' : 'flex'}; height:100px;
+          align-items:center; justify-content:center; font-size:2.5rem; background:rgba(0,0,0,0.2);">
+          🖼️
+        </div>
         <div class="history-card-info">
-          <p>${data.memeName || 'Unknown meme'}</p>
+          <p>${memeName}</p>
           <small>${dateStr}</small>
         </div>`;
 
@@ -67,12 +103,18 @@ async function loadHistory() {
     });
 
   } catch (err) {
-    console.error('History load error:', err);
+    console.error('History load error:', err.code, err.message);
+
+    let hint = err.message;
+    if (err.code === 'permission-denied') {
+      hint = 'Firestore permission denied — check your security rules cover users/{uid}/memeHistory.';
+    }
+
     grid.innerHTML = `
       <div class="state-msg" style="color:#ffaaaa;">
         <span>⚠️</span>
         Error loading history.<br>
-        <small style="color:rgba(255,150,150,0.7)">${err.message}</small>
+        <small style="color:rgba(255,150,150,0.7); font-size:0.8rem">${hint}</small>
       </div>`;
   }
 }
