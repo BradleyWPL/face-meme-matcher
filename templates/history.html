@@ -12,7 +12,6 @@
 
         html, body {
             height: 100%; width: 100%;
-            /* History page IS allowed to scroll */
             background: #12102a;
             font-family: 'Nunito', sans-serif;
             color: #fff;
@@ -134,7 +133,6 @@
             font-weight: 600;
         }
 
-        /* ── EMPTY / ERROR STATES ── */
         .state-msg {
             grid-column: 1 / -1;
             text-align: center;
@@ -145,7 +143,6 @@
 
         .state-msg span { font-size: 2.5rem; display: block; margin-bottom: 12px; }
 
-        /* ── FOOTER ── */
         footer {
             text-align: center;
             margin-top: 40px;
@@ -157,17 +154,15 @@
 </head>
 <body>
 
-    <!-- Sticky header -->
     <div class="history-header">
         <div class="header-brand">🎭 Meme Me</div>
         <div class="header-right">
             <span id="user-email-display"></span>
             <button class="nav-btn" onclick="goBack()">← Back</button>
-            <button class="nav-btn logout-btn" onclick="handleLogout()">Logout</button>
+            <button class="nav-btn logout-btn" onclick="logout()">Logout</button>
         </div>
     </div>
 
-    <!-- Page content -->
     <div class="history-wrapper">
         <h2 class="history-title">Your Meme History</h2>
         <p class="history-subtitle">All your saved meme matches, newest first</p>
@@ -182,13 +177,19 @@
         <footer>Made with joy from Particularly Kool Joy Coders Team 😎</footer>
     </div>
 
-    <!-- Firebase SDKs — Storage SDK is REQUIRED for history image URLs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-    <script src="/static/js/firebase-config.js"></script>
-    <script src="/static/js/auth.js"></script>
-    <script src="/static/js/history.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="history.js"></script>
+
+    <script>
+        window.onload = function() {
+            loadHistory();
+        };
+    </script>
 </body>
 </html>

@@ -4,11 +4,7 @@
 // Auth session — not just a sessionStorage entry. This file sets persistence
 // to LOCAL so the auth token survives page navigations and browser refreshes.
 
-// ── BYPASS LOGIN ──────────────────────────────
-function bypassLogin() {
-  sessionStorage.setItem('user', JSON.stringify({ email: 'test@user.com', uid: 'bypass-user', bypass: true }));
-  window.location.href = 'http://localhost:5001/meme-me.html';
-}
+
 
 // ── LOGIN ─────────────────────────────────────
 async function handleLogin() {
@@ -31,7 +27,7 @@ async function handleLogin() {
     const result = await auth.signInWithEmailAndPassword(email, password);
     const user = result.user;
     sessionStorage.setItem('user', JSON.stringify({ email: user.email, uid: user.uid }));
-    window.location.href = 'http://localhost:5001/meme-me.html';
+    window.location.href = 'meme-me.html';
   } catch (err) {
     console.error('Login error code:', err.code);
     showError(friendlyError(err.code));
@@ -79,7 +75,7 @@ async function handleSignup() {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     sessionStorage.setItem('user', JSON.stringify({ email: user.email, uid: user.uid }));
-    window.location.href = 'http://localhost:5001/meme-me.html';
+    window.location.href = 'meme-me.html';
   } catch (err) {
     console.error('Signup error code:', err.code);
     showError(friendlyError(err.code));
@@ -124,7 +120,7 @@ function requireAuth() {
 }
 
 function goBack() {
-  window.location.href = 'http://localhost:5001/meme-me.html';
+  window.location.href = 'meme-me.html';
 }
 
 // ── ERROR HELPERS ─────────────────────────────
@@ -151,4 +147,21 @@ function friendlyError(code) {
     'auth/operation-not-allowed':      'Email/password login is not enabled. Contact support.',
   };
   return map[code] || 'Something went wrong. Please try again.';
+}
+
+// ✅ ADD THIS TO THE VERY BOTTOM OF auth.js
+function requireAuth() {
+  const userStr = sessionStorage.getItem('user');
+  
+  // If no session exists, check if Firebase is still "waking up"
+  if (!userStr && !auth.currentUser) {
+    window.location.href = 'login.html';
+    return null;
+  }
+  return userStr ? JSON.parse(userStr) : auth.currentUser;
+}
+
+// Ensure your redirects don't use "localhost:5001"
+function goBack() {
+  window.location.href = 'meme-me.html';
 }

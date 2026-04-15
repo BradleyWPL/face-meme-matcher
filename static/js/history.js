@@ -4,22 +4,51 @@
 
 
 async function loadHistory() {
-  const user = requireAuth();
-  if (!user) return;
-
-  const emailEl = document.getElementById('user-email-display');
-  if (emailEl) emailEl.textContent = user.email;
+  const sessionUser = requireAuth(); // Now this will work!
+  if (!sessionUser) return;
 
   const grid = document.getElementById('history-grid');
 
-  if (user.bypass) {
-    grid.innerHTML = `
-      <div class="state-msg">
-        <span>🧪</span>
-        Test account — no saved memes.<br>Log in with a real account to see your history.
-      </div>`;
-    return;
-  }
+  // ✅ WAIT for Firebase to confirm the login session
+  auth.onAuthStateChanged(async (firebaseUser) => {
+    if (!firebaseUser) {
+      console.error("Firebase Auth not ready.");
+      return;
+    }
+
+    try {
+      // Use the firebaseUser.uid directly for the most security
+      const snapshot = await db.collection('users')
+        .doc(firebaseUser.uid)
+        .collection('memeHistory')
+        .orderBy('savedAt', 'desc')
+        .get();
+
+      grid.innerHTML = ''; 
+
+      if (snapshot.empty) {
+        grid.innerHTML = '<div class="state-msg">No memes saved yet!</div>';
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `
+          <img src="${data.imageUrl}" alt="Meme">
+          <div class="history-card-info">
+            <p>${data.memeName || 'Meme Match'}</p>
+            <small>${data.savedAt ? new Date(data.savedAt.toDate()).toLocaleDateString() : ''}</small>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Firestore Error:", err);
+    }
+  });
+}
 
   // ✅ CRITICAL FIX: Wait for Firebase Auth to confirm the session
   // before making any Firestore request. Without this, request.auth
@@ -31,7 +60,7 @@ async function loadHistory() {
       if (!firebaseUser) {
         // Auth session truly gone — redirect to login
         sessionStorage.removeItem('user');
-        window.location.href = 'http://localhost:5001/login';
+        window.location.href = 'meme-me.html'; // This uses a relative path so the port doesn't matter
         return;
       }
 
@@ -117,6 +146,5 @@ async function loadHistory() {
         <small style="color:rgba(255,150,150,0.7); font-size:0.8rem">${hint}</small>
       </div>`;
   }
-}
 
 loadHistory();

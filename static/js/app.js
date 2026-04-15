@@ -255,11 +255,6 @@ async function downloadSnapshot() {
   link.href = snapCanvas.toDataURL('image/png');
   link.click();
 
-  // Firebase save
-  if (!user || user.bypass) {
-    console.log('Bypass/no user — skipping Firebase save.');
-    return;
-  }
 
   const btn = document.getElementById('download-btn');
   if (btn) { btn.textContent = '⏳ Saving…'; btn.disabled = true; }
@@ -276,12 +271,11 @@ async function downloadSnapshot() {
     await storageRef.put(blob, { contentType: 'image/png' });
     const imageUrl = await storageRef.getDownloadURL();
 
-    await db.collection('users').doc(user.uid)
-      .collection('memeHistory').add({
-        memeName: memeName,
-        imageUrl: imageUrl,
-        savedAt:  firebase.firestore.FieldValue.serverTimestamp(),
-      });
+    await db.collection('users').doc(user.uid).collection('memeHistory').add({
+    imageUrl: downloadURL,
+    memeName: currentMeme.name,
+    savedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
 
     console.log('✅ Saved to Firebase!');
     if (btn) {
@@ -442,7 +436,6 @@ function checkGamePose(match) {
   }
 }
 
-// ── END GAME ─────────────────────────────────
 async function endGame() {
   if (!gameActive) return;
   gameActive = false;
@@ -450,18 +443,16 @@ async function endGame() {
 
   showOverlay(false);
 
-  const earned = gameScore; // 1 coin per correct pose
+  const earned = gameScore;
   joyCoins += earned;
 
-  // Show end modal
   const modal = document.getElementById('game-end-modal');
   modal.style.display = 'flex';
-  document.getElementById('end-score').textContent     = `You matched ${gameScore} meme${gameScore !== 1 ? 's' : ''}!`;
-  document.getElementById('end-coins').textContent     = `+${earned} Joy Coins earned 🪙`;
-  document.getElementById('total-coins-display').textContent = `Total: ${joyCoins} 🪙`;
-
+  document.getElementById('end-score').textContent = `You matched ${gameScore} memes!`;
+  
   updateCoinDisplay(joyCoins);
   await saveJoyCoins(joyCoins);
+  // Note: We removed the db.collection('memeHistory').add logic from here
 }
 
 // ── CLOSE END MODAL ───────────────────────────
