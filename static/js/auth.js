@@ -49,8 +49,8 @@ async function handleSignup() {
     showError('Passwords do not match.');
     return;
   }
-  if (password.length < 6) {
-    showError('Password must be at least 6 characters.');
+  if (password.length < 8) {
+    showError('Password must be at least 8 characters.');
     return;
   }
   if (!/[A-Z]/.test(password)) {
@@ -141,7 +141,7 @@ function friendlyError(code) {
     'auth/wrong-password':             'Incorrect password. Please try again.',
     'auth/email-already-in-use':       'An account with this email already exists.',
     'auth/invalid-email':              'Please enter a valid email address.',
-    'auth/weak-password':              'Password must be at least 6 characters.',
+    'auth/weak-password':              'Password must be at least 8 characters.',
     'auth/too-many-requests':          'Too many attempts. Please wait a moment and try again.',
     'auth/network-request-failed':     'Network error — check your internet connection.',
     'auth/user-disabled':              'This account has been disabled.',
