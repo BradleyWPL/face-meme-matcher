@@ -121,6 +121,7 @@ function requireAuth() {
 
 function goBack() {
   window.location.href = 'meme-me.html';
+  
 }
 
 // ── ERROR HELPERS ─────────────────────────────
