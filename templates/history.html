@@ -151,13 +151,15 @@
             font-weight: 600;
         }
     </style>
+
+    
 </head>
 <body>
 
     <div class="history-header">
         <div class="header-brand">🎭 Meme Me</div>
         <div class="header-right">
-            <span id="user-email-display"></span>
+            <span id="user-email-display" style="margin-right: 15px; font-weight: bold; color: #ffeb3b;"></span>
             <button class="nav-btn" onclick="goBack()">← Back</button>
             <button class="nav-btn logout-btn" onclick="logout()">Logout</button>
         </div>
@@ -177,11 +179,13 @@
         <footer>Made with joy from Particularly Kool Joy Coders Team 😎</footer>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
+    <script src="/static/js/firebase-config.js"></script>
+    <script src="/static/js/history.js"></script>
     <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
     <script src="history.js"></script>

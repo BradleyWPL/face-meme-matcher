@@ -161,8 +161,6 @@ async function runDetection() {
     // Resize results (needed for accuracy) but canvas stays hidden
     const dims    = faceapi.matchDimensions(canvas, video, true);
     const resized = faceapi.resizeResults(detection, dims);
-    // NOTE: we intentionally do NOT call faceapi.draw.drawFaceLandmarks()
-    // Canvas is hidden so dots never show on screen
 
     const features = extractFeatures(resized.landmarks);
     const match    = findBestMatch(features);
@@ -227,11 +225,22 @@ async function downloadSnapshot() {
     return;
   }
 
-  const user      = JSON.parse(sessionStorage.getItem('user') || 'null');
-  const memeName  = memeLabel ? memeLabel.textContent.trim() : 'Unknown';
+  // ── 1. Get authenticated Firebase user (secure — not sessionStorage) ──
+  const firebaseUser = auth.currentUser;
+  if (!firebaseUser) {
+    alert('You must be logged in to save memes!');
+    return;
+  }
+
+  // ── 2. Capture the meme name from the label ──
+  const memeName  = (memeLabel && memeLabel.textContent.trim() !== 'Strike a pose!')
+    ? memeLabel.textContent.trim()
+    : 'Unknown Meme';
   const timestamp = Date.now();
 
-  // Build side-by-side canvas
+  console.log('📸 Starting snapshot save:', { uid: firebaseUser.uid, memeName, timestamp });
+
+  // ── 3. Build side-by-side canvas ──
   const snapCanvas = document.createElement('canvas');
   snapCanvas.width  = w * 2;
   snapCanvas.height = h;
@@ -249,43 +258,69 @@ async function downloadSnapshot() {
     ctx.fillText('No match yet!', w * 1.5, h / 2);
   }
 
-  // Local download
+  // ── 4. Local download (always works, no auth needed) ──
   const link = document.createElement('a');
   link.download = `meme-match-${timestamp}.png`;
   link.href = snapCanvas.toDataURL('image/png');
   link.click();
 
-
+  // ── 5. Firebase Storage + Firestore save ──
   const btn = document.getElementById('download-btn');
   if (btn) { btn.textContent = '⏳ Saving…'; btn.disabled = true; }
 
   try {
+    // Convert canvas to Blob for efficient upload
     const blob = await new Promise((resolve, reject) => {
       snapCanvas.toBlob(
-        b => b ? resolve(b) : reject(new Error('toBlob returned null')),
+        b => b ? resolve(b) : reject(new Error('toBlob returned null — canvas may be empty')),
         'image/png'
       );
     });
 
-    const storageRef = storage.ref().child(`memeHistory/${user.uid}/${timestamp}.png`);
+    console.log('📦 Blob created, size:', blob.size, 'bytes');
+
+    // Upload to Firebase Storage: memeHistory/{uid}/{timestamp}.png
+    const storagePath = `memeHistory/${firebaseUser.uid}/${timestamp}.png`;
+    const storageRef = storage.ref().child(storagePath);
+
+    console.log('☁️ Uploading to Storage path:', storagePath);
     await storageRef.put(blob, { contentType: 'image/png' });
+
+    // Get the public download URL
     const imageUrl = await storageRef.getDownloadURL();
+    console.log('🔗 Download URL obtained:', imageUrl);
 
-    await db.collection('users').doc(user.uid).collection('memeHistory').add({
-    imageUrl: downloadURL,
-    memeName: currentMeme.name,
-    savedAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
+    // Save metadata to Firestore — using correct variable names
+    await db.collection('users')
+      .doc(firebaseUser.uid)
+      .collection('memeHistory')
+      .add({
+        imageUrl: imageUrl,       // ✅ Firebase Storage URL (was wrongly `downloadURL`)
+        memeName: memeName,       // ✅ local string variable (was wrongly `currentMeme.name`)
+        savedAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      });
 
-    console.log('✅ Saved to Firebase!');
+    console.log('✅ Firestore record saved! imageUrl:', imageUrl, 'memeName:', memeName);
+
     if (btn) {
       btn.innerHTML = '✅ Saved!';
       setTimeout(() => { btn.innerHTML = '⬇ Download<br>Match'; btn.disabled = false; }, 2500);
     }
+
   } catch (err) {
-    console.error('❌ Firebase save failed:', err.code, err.message);
-    let hint = err.code === 'storage/unauthorized' ? 'Check Storage rules.' : err.message;
+    console.error('❌ Firebase save failed — code:', err.code, '| message:', err.message);
+
+    let hint = 'Unknown error';
+    if (err.code === 'storage/unauthorized') {
+      hint = 'Storage rules blocked the upload. Check Firebase Storage Rules.';
+    } else if (err.code === 'permission-denied') {
+      hint = 'Firestore rules blocked the write. Check Firebase Firestore Rules.';
+    } else if (err.message) {
+      hint = err.message;
+    }
+
     alert('Downloaded locally ✅\nCloud save failed ❌: ' + hint);
+
     if (btn) {
       btn.innerHTML = '⚠️ Retry';
       setTimeout(() => { btn.innerHTML = '⬇ Download<br>Match'; btn.disabled = false; }, 3000);
@@ -395,7 +430,6 @@ async function startGame() {
   // ── Game clock — ends after 10s ───────────
   gameTimerLoop = setInterval(() => {
     const remaining = gameEndTime - Date.now();
-    // Update overall timer bar
     const pct = Math.max(0, remaining / GAME_DURATION_MS * 100);
     document.getElementById('game-timer-bar').style.width = pct + '%';
 
@@ -422,12 +456,10 @@ function checkGamePose(match) {
   if (!gameActive || !gameTarget || !match) return;
   if (match.id !== gameTarget.id) return;
 
-  // Correct pose hit within window!
   if (Date.now() <= gameEndTime) {
     gameScore++;
     document.getElementById('game-score-display').textContent = `Score: ${gameScore} ✅`;
 
-    // Flash green feedback
     document.getElementById('game-prompt').style.color = '#7fff7f';
     setTimeout(() => {
       document.getElementById('game-prompt').style.color = '#fff';
@@ -452,7 +484,6 @@ async function endGame() {
   
   updateCoinDisplay(joyCoins);
   await saveJoyCoins(joyCoins);
-  // Note: We removed the db.collection('memeHistory').add logic from here
 }
 
 // ── CLOSE END MODAL ───────────────────────────

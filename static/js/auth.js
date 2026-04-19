@@ -1,7 +1,7 @@
 // ── auth.js ───────────────────────────────────────────────────────────────
 // KEY FIX: Firebase Firestore security rules use request.auth on the SERVER.
 // For request.auth to be non-null, the browser must have an active Firebase
-// Auth session — not just a sessionStorage entry. This file sets persistence
+// Auth session  not just a sessionStorage entry. This file sets persistence
 // to LOCAL so the auth token survives page navigations and browser refreshes.
 
 
@@ -149,7 +149,7 @@ function friendlyError(code) {
   return map[code] || 'Something went wrong. Please try again.';
 }
 
-// ✅ ADD THIS TO THE VERY BOTTOM OF auth.js
+//  ADD THIS TO THE VERY BOTTOM OF auth.js
 function requireAuth() {
   const userStr = sessionStorage.getItem('user');
   
