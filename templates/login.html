@@ -4,159 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Me – Login 🎭</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html, body {
-            height: 100%; width: 100%;
-            overflow: hidden; /* NO SCROLL on login page */
-            background: #12102a;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Nunito', sans-serif;
-        }
-
-        /* Subtle background texture */
-        body::before {
-            content: '';
-            position: fixed; inset: 0;
-            background:
-                radial-gradient(ellipse at 20% 50%, rgba(106,53,216,0.25) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(245,166,35,0.12) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        /* ── CARD ── */
-        .auth-box {
-            position: relative;
-            background: #6a35d8;
-            border-radius: 20px;
-            padding: 32px 36px 28px;
-            width: 100%; max-width: 370px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
-            display: flex; flex-direction: column; gap: 14px;
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .auth-icon {
-            font-size: 2.6rem;
-            text-align: center;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-        }
-
-        .auth-box h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2rem; font-weight: 400;
-            color: #fff; text-align: center;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .auth-box h2 {
-            font-size: 1rem; color: rgba(255,255,255,0.7);
-            text-align: center; margin-top: -8px;
-            font-weight: 600;
-        }
-
-        /* ── FIELDS ── */
-        .auth-field { display: flex; flex-direction: column; gap: 5px; }
-
-        .auth-field label {
-            font-size: 0.72rem; font-weight: 800;
-            color: #f5a623;
-            text-transform: uppercase; letter-spacing: 0.8px;
-        }
-
-        .auth-field input {
-            width: 100%; padding: 10px 14px;
-            background: rgba(255,255,255,0.13);
-            border: 1.5px solid rgba(255,255,255,0.2);
-            border-radius: 10px; color: #fff;
-            font-size: 0.95rem; font-family: 'Nunito', sans-serif;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .auth-field input::placeholder { color: rgba(255,255,255,0.38); }
-        .auth-field input:focus {
-            border-color: #f5a623;
-            background: rgba(255,255,255,0.18);
-        }
-
-        /* ── BUTTONS ── */
-        .auth-btn {
-            width: 100%; padding: 11px;
-            background: #fff; color: #6a35d8;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 800; font-size: 1rem;
-            border: none; border-radius: 12px;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-            margin-top: 2px;
-        }
-        .auth-btn:hover  { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-        .auth-btn:active { transform: translateY(0); }
-        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        .bypass-btn {
-            background: transparent;
-            border: 1.5px solid rgba(255,255,255,0.3);
-            color: rgba(255,255,255,0.6);
-            font-size: 0.82rem; font-weight: 600;
-            box-shadow: none; margin-top: 0;
-        }
-        .bypass-btn:hover { background: rgba(255,255,255,0.08); box-shadow: none; }
-
-        /* ── ERROR BOX ── */
-        .auth-error {
-            background: rgba(255, 80, 80, 0.18);
-            border: 1.5px solid rgba(255, 80, 80, 0.4);
-            color: #ffb3b3;
-            border-radius: 10px;
-            padding: 9px 14px;
-            font-size: 0.85rem; text-align: center;
-            font-weight: 600;
-            animation: shake 0.3s ease;
-        }
-        @keyframes shake {
-            0%,100% { transform: translateX(0); }
-            25%      { transform: translateX(-6px); }
-            75%      { transform: translateX(6px); }
-        }
-        .hidden { display: none; }
-
-        /* ── SWITCH LINK ── */
-        .auth-switch {
-            text-align: center;
-            color: rgba(255,255,255,0.65);
-            font-size: 0.85rem; font-weight: 600;
-        }
-        .auth-switch a {
-            color: #f5a623; font-weight: 800;
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        .auth-switch a:hover { opacity: 0.8; }
-
-        /* ── FOOTER ── */
-        footer {
-            margin-top: 18px;
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.3);
-            text-align: center;
-            font-weight: 600;
-        }
-    </style>
 </head>
 <body>
 
@@ -189,11 +41,14 @@
 
     <footer>Made with joy from Particularly Kool Joy Coders Team 😎</footer>
 
-    <!-- Firebase SDKs -->
+    <!-- Scripts for Firebase, app logic, and firebase -->
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="/static/js/firebase-config.js"></script>
     <script src="/static/js/auth.js"></script>
+    <script src="/static/js/script.js"></script>
+
 </body>
 </html>

@@ -1,4 +1,36 @@
 // ── script.js ─────────────────────────────────────────────────────────────
+
+// script code to handle non-engine and app functionality
+
+
+console.log("Script loaded successfully!");
+
+
+// Toggle password visibility with icon
+document.addEventListener('DOMContentLoaded', () => {
+console.log("DOM READY");
+
+const toggles = document.querySelectorAll('.toggle-icon');
+console.log("toggles found:", toggles.length);
+
+toggles.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+        console.log("clicked!");
+
+        const input = toggle.parentElement.querySelector('input');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            toggle.textContent = '👀';
+        } else {
+            input.type = 'password';
+            toggle.textContent = '😎';
+        }
+    });
+});
+});
+
+
 const downloadButton = document.getElementById('download-button');
 if (downloadButton) {
   downloadButton.addEventListener('click', downloadSnapshot);
