@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Me - Welcome</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script></script>
+    <link rel="stylesheet" href="../static/css/style.css"">    
 </head>
 <body>
 
     <div class="main-container">
 
         <div class="card">
-            <h1 class="title">Welcome to Meme Me</h1>
+            <h1 class="header-title">Welcome to Meme Me</h1>
 
             <img src="{{ url_for('static', filename='resources/images/meme-me-logo.png') }}" 
                  alt="Meme Me Logo - Bunch of color cute stylized faces, called joy coins"  class="logo"/>
@@ -24,9 +23,8 @@
             <h3>Express yourself and share your unique meme creations with the world!</h3>
             <p>To get started, we require face camera, click to continue!</p>
 
-            <br>
 
-            <a class="button" href="{{ url_for('login') }}">Continue</a>
+            <a class="hdr-link" href="{{ url_for('login') }}">Continue</a>
         </div>
 
         <footer> Made with joy from Particularly Kool Joy Coders Team 😎 </footer>
