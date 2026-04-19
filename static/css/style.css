@@ -3,9 +3,9 @@
 /* Main color palette for Meme Me, use variables for easy changes */
 
 :root {
-    --main-color: #4936b8;
-    --medium-color: #322470;
-    --dark-color: #251976;
+    --main-color: #5736b8;;
+    --medium-color: #281e86b3;
+    --dark-color: #2f1974;
     --second-color: #ec9f4c;
     --accent-color: white;
     --text-color: white;
@@ -24,8 +24,12 @@
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { 
+        opacity: 0; transform: translateY(24px); 
+    }
+    to   { 
+        opacity: 1; transform: translateY(0); 
+    }
 }
 
 

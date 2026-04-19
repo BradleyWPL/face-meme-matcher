@@ -1,0 +1,380 @@
+
+/* Main color palette for Meme Me, use variables for easy changes */
+
+:root {
+    --main-color: #5736b8;;
+    --medium-color: #281e86b3;
+    --dark-color: #2f1974;
+    --second-color: #ec9f4c;
+    --accent-color: white;
+    --text-color: white;
+}
+
+/* ── RESET: ZERO SCROLL ─────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;         /* NO scroll — horizontal OR vertical */
+    background: var(--dark-color);
+    font-family: 'Nunito', sans-serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+/* subtle radial glow in background */
+body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+        radial-gradient(ellipse at 15% 50%, rgba(106,53,216,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 50%, rgba(106,53,216,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 0%,  rgba(245,166,35,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.header {
+    flex-shrink: 0;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: rgba(18, 14, 56, 0.7);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    position: relative; z-index: 10;
+}
+
+.header-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+.header-right {
+    display: flex; align-items: center; gap: 8px;
+}
+
+#nav-user {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.45);
+    font-weight: 600;
+    max-width: 160px;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+}
+
+.hdr-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem; font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    transition: background 0.2s, transform 0.15s;
+}
+.hdr-btn:hover {
+     background: rgba(255,255,255,0.2); 
+     transform: translateY(-1px); 
+}
+.hdr-btn.logout {
+     border-color: rgba(255,80,80,0.4); 
+     color: #ffaaaa; 
+     background: rgba(255,80,80,0.12); 
+}
+.hdr-btn.logout:hover {
+     background: rgba(255,80,80,0.25); 
+}
+
+/* ── MAIN AREA — fills remaining height ─────────────────────── */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative; z-index: 1;
+    padding: 10px 14px 8px;
+    gap: 8px;
+}
+
+/* ── TOP ROW: Camera | Controls | Meme ──────────────────────── */
+.top-row {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 160px 1fr;
+    gap: 12px;
+    min-height: 0;  /* allows flex children to shrink */
+}
+
+/* ── PANEL (shared by camera + meme) ────────────────────────── */
+.panel {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.13);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 10px 8px;
+    overflow: hidden;
+    backdrop-filter: blur(6px);
+    position: relative;
+}
+
+.panel-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: #f5a623;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+}
+
+/* ── VIDEO ───────────────────────────────────────────────────── */
+#camera-panel {
+    position: relative; /* for canvas overlay */
+}
+
+#video {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    background: #000;
+}
+
+/* HIDE the face landmark canvas — we detect but don't show dots */
+#landmark-canvas {
+    display: none !important;
+}
+
+/* ── MEME DISPLAY ────────────────────────────────────────────── */
+#meme-display {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    transition: opacity 0.25s;
+}
+
+#meme-display[src=""] {
+    opacity: 0.3;
+}
+
+#meme-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    margin-top: 5px;
+    flex-shrink: 0;
+    text-align: center;
+    min-height: 18px;
+}
+
+/* ── CENTER CONTROLS COLUMN ──────────────────────────────────── */
+.controls-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.ctrl-btn {
+    width: 140px;
+    padding: 13px 8px;
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    text-align: center;
+    line-height: 1.3;
+}
+
+#download-btn {
+    background: #f5a623;
+    color: #1a1040;
+    box-shadow: 0 4px 18px rgba(245,166,35,0.4);
+}
+
+#download-btn:hover  {
+     transform: translateY(-2px); 
+     box-shadow: 0 8px 24px rgba(245,166,35,0.55); 
+}
+
+#download-btn:active {
+     transform: translateY(0); 
+}
+
+#download-btn:disabled {
+     opacity: 0.6; 
+     cursor: not-allowed; 
+     transform: none; 
+}
+
+#history-btn {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+
+
+#history-btn:hover, #history-btn:focus { 
+    background: rgba(255,255,255,0.2); 
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 24px rgba(245,166,35,0.55); 
+
+}
+
+#history-btn:active {
+     transform: translateY(0); 
+}
+
+.match-status {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    line-height: 1.4;
+}
+.match-status.active { 
+    color: #7fff7f; 
+}
+
+/* ── BOTTOM STRIP: Instructions + Gallery ───────────────────── */
+.bottom-strip {
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    height: 30%;
+}
+
+.instructions-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6px 14px;
+}
+
+.instructions-box .box-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.3rem;
+    color: #f5a623;
+    margin-bottom: 2px;
+    letter-spacing: 2px;;
+    word-spacing: 8px;
+}
+
+.instructions-box .box-title::first-letter {
+    font-size: 3.5rem;
+    color: #ec9f4c;
+}
+
+.instructions-box .box-title:hover {
+    filter: drop-shadow(2px 8px 30px rgba(234, 162, 45, 0.85));
+    transform: translateY(-4px); 
+    transition: color 0.2s, transform 0.25s ease-in-out;
+}
+
+#instructions-text {
+    font-size: 1.25rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 600;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Gallery */
+.gallery-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 10px;
+}
+
+.gallery-box .box-title {
+    display: none; /* hidden in compact mode */
+}
+
+.gal-arrow {
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-size: 1.25rem;
+    cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.gal-arrow:hover { 
+    background: rgba(255,255,255,0.3); 
+}
+
+.gallery-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+}
+
+#gallery-display {
+    height: 100%;
+    max-height: 20vh;
+    width: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    margin: 4px;
+}
+
+#gallery-label {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.65);
+    text-align: center;
+    white-space: nowrap;
+    padding: 1px;
+    margin: 8px;
+    background-color: hsla(31, 81%, 61%, 0.45);
+}
+
+#gallery-label:hover {
+    background-color: hsla(264, 81%, 61%, 0.75);
+    filter: drop-shadow(0 0 6px #aa52fdcc);
+    color: rgba(255, 255, 255, 0.65);
+    transform: translateY(-2px); 
+    transition: background-color 0.2s, transform 0.25s ease-in-out;
+}
+
