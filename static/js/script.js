@@ -33,22 +33,22 @@ async function downloadSnapshot() {
   ctx.drawImage(video, 0, 0);
   ctx.drawImage(memeDisplay, video.videoWidth, 0, video.videoWidth, video.videoHeight);
 
-  const imageUrl = canvas.toDataURL('image/png');
+  const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 
-  // ── 3. SAVE TO FIREBASE ──
-  try {
-    if (downloadButton) {
-      downloadButton.textContent = 'Saving...';
-      downloadButton.disabled = true;
-    }
+// ── 3. UPLOAD TO FIREBASE STORAGE FIRST ──
+try {
+    const filename = `memeHistory/${user.uid}/${Date.now()}.png`;
+    const storageRef = firebase.storage().ref(filename);
+    const uploadTask = await storageRef.put(imageBlob);
+    const downloadURL = await uploadTask.ref.getDownloadURL();
 
-    // Write to: users/{uid}/memeHistory
+    // ── 4. SAVE URL TO FIRESTORE ──
     await db.collection('users')
       .doc(user.uid)
       .collection('memeHistory')
       .add({
         memeName: memeName,
-        imageUrl: imageUrl, // Saving the actual picture
+        imageUrl: downloadURL,  // ← real URL, not base64
         savedAt:  firebase.firestore.FieldValue.serverTimestamp(),
       });
 
