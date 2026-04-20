@@ -10,6 +10,33 @@
     --text-color: white;
 }
 
+
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+        transform: rotate3d(5px, 0, 0, 45deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+        transform: rotate3d(0, 0, 0, 0);
+    }
+}
+
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; transform: translateY(24px); 
+    }
+    to   { 
+        opacity: 1; transform: translateY(0); 
+    }
+}
+
+
+
 /* ── RESET: ZERO SCROLL ─────────────────────────────────────── */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -53,11 +80,25 @@ body::before {
     position: relative; z-index: 10;
 }
 
+
+/* Animation header + Delay */
+.header > * {
+  animation: slideUp 0.4s cubic-bezier(0.24, 0.03, 0.1, 1.03);
+}
+
+.header > *:nth-child(1) { animation-delay: 0.05s; }
+.header > *:nth-child(2) { animation-delay: 0.1s; }
+.header > *:nth-child(3) { animation-delay: 0.15s; }
+.header > *:nth-child(4) { animation-delay: 0.2s; }
+
+
 .header-title {
     font-family: 'Fredoka One', cursive;
     font-size: 1.3rem;
     color: #fff;
     letter-spacing: 0.5px;
+    animation: slideUp 0.25s cubic-bezier(0.24, 0.03, 0.1, 1.03);
+
 }
 
 .header-right {
@@ -321,6 +362,12 @@ body::before {
     justify-content: center;
     gap: 8px;
     padding: 6px 10px;
+}
+
+.gallery-box:hover {
+    border: 1px solid rgba(245,166,35,0.55); 
+    box-shadow: 0 8px 24px rgba(245,166,35,0.55); 
+
 }
 
 .gallery-box .box-title {

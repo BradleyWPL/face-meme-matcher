@@ -374,7 +374,7 @@ async function loadJoyCoins() {
 
 function updateCoinDisplay(coins) {
   const el = document.getElementById('joy-coins-display');
-  if (el) el.textContent = `🪙 ${coins}`;
+  if (el) el.textContent = `😆 ${coins}`;
 }
 
 // ── SAVE JOY COINS TO FIREBASE ───────────────
