@@ -1,4 +1,38 @@
+/* Main color palette for Meme Me, use variables for easy changes */
 
+:root {
+    --main-color: #5736b8;;
+    --medium-color: #281e86b3;
+    --dark-color: #2f1974;
+    --second-color: #ec9f4c;
+    --accent-color: white;
+    --text-color: white;
+}
+
+
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+        transform: rotate3d(5px, 0, 0, 45deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+        transform: rotate3d(0, 0, 0, 0);
+    }
+}
+
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; transform: translateY(24px); 
+    }
+    to   { 
+        opacity: 1; transform: translateY(0); 
+    }
+}
 
 
 
@@ -9,8 +43,9 @@
 }
 
 html, body {
-    height: 100%; width: 100%;
-    background: #12102a;
+    height: 100%; 
+    width: 100%;
+    background: #221955;
     font-family: 'Nunito', sans-serif;
     color: #fff;
 }
@@ -27,7 +62,7 @@ body::before {
 /* ── HEADER ── */
 .history-header {
     position: sticky; top: 0; z-index: 10;
-    background: rgba(18,16,42,0.92);
+    background: rgba(18, 14, 56, 0.7);;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -35,6 +70,12 @@ body::before {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     flex-wrap: wrap;
 }
+
+
+.history-header > * {
+  animation: slideUp 0.4s cubic-bezier(0.24, 0.03, 0.1, 1.03);
+}
+
 
 .header-brand {
     font-family: 'Fredoka One', cursive;
@@ -50,8 +91,10 @@ body::before {
 }
 
 #user-email-display {
-    font-size: 0.8rem; color: rgba(255,255,255,0.5);
-    font-weight: 600; max-width: 180px;
+    font-size: 0.8rem; 
+    color: var(--second-color);
+    font-weight: 600;
+    max-width: 180px;
     overflow: hidden; 
     text-overflow: ellipsis; 
     white-space: nowrap;
@@ -59,12 +102,13 @@ body::before {
 
 .nav-btn {
     padding: 7px 16px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 10px; color: #fff;
     font-family: 'Nunito', sans-serif;
     font-size: 0.82rem; font-weight: 700;
-    cursor: pointer; transition: background 0.2s, transform 0.15s;
+    cursor: pointer; 
+    transition: background 0.2s, transform 0.15s;
 }
 
 .nav-btn:hover {
@@ -73,18 +117,19 @@ body::before {
     }
 
 .logout-btn {
-    background: rgba(255,80,80,0.15);
-    border-color: rgba(255,80,80,0.35);
-    color: #ffaaaa;
+    background: rgba(255, 182, 80, 0.15);
+    border-color: rgba(255, 153, 80, 0.35);
+    color: #ffccaa;
 }
 .logout-btn:hover { 
-    background: rgba(255,80,80,0.28); 
+    background: rgba(255, 147, 80, 0.28); 
 }
 
 /* ── PAGE BODY ── */
 .history-wrapper {
     max-width: 1000px; margin: 0 auto;
     padding: 32px 24px 48px;
+    animation: slideUp 0.35s ease both;
 }
 
 .history-title {
@@ -109,7 +154,7 @@ body::before {
 }
 
 .history-card {
-    background: #6a35d8;
+    background: var(--main-color);
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0,0,0,0.35);
@@ -120,7 +165,7 @@ body::before {
 
 .history-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+    box-shadow: 0 14px 36px rgba(194, 130, 20, 0.305);
 }
 
 @keyframes fadeIn {
