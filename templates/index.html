@@ -11,19 +11,23 @@
     <div class="main-container">
 
         <div class="card">
-            <h1 class="header-title">Welcome to Meme Me</h1>
+            <h1 class="header-title hightlight-effect" >Welcome to Meme Me</h1>
 
             <img src="{{ url_for('static', filename='resources/images/meme-me-logo.png') }}" 
                  alt="Meme Me Logo - Bunch of color cute stylized faces, called joy coins"  class="logo"/>
 
+
+            <span class="card-subheader">🎭 Capture Your Expressions, Create Your Memes! 🎭</span>
             
-
-
-            <h2>Meme me is a fun & exciting application that captures your expressions into memes! Don't just create or consume memes!</h2>
-            <h3>Express yourself and share your unique meme creations with the world!</h3>
+            <div class="info-block">
+                <span class="card-section">
+                <h2>Meme me is a fun & exciting application! Don't just create or consume memes!</h2>
+                </span>
+                <span class="card-section">
+                <h3>Express yourself and share your unique meme creations with the world!</h3>
+                </span>
+            </div>
             <p>To get started, we require face camera, click to continue!</p>
-
-
             <a class="hdr-link" href="{{ url_for('login') }}">Continue</a>
         </div>
 
