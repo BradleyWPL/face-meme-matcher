@@ -26,9 +26,13 @@
 
         <div class="auth-field">
             <label>Password</label>
-            <input type="password" id="password" placeholder="Enter your password"
-                   autocomplete="current-password"
-                   onkeydown="if(event.key==='Enter') handleLogin()" />
+                <span class="input-wrapper">
+                
+                    <input type="password" id="password" placeholder="Enter your password"
+                        autocomplete="current-password"
+                        onkeydown="if(event.key==='Enter') handleLogin()" />
+                 <span class="toggle-icon">😎</span>
+            </span>
         </div>
 
         <button class="auth-btn" onclick="handleLogin()">Login</button>

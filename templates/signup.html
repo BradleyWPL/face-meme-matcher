@@ -26,8 +26,11 @@
 
         <div class="auth-field">
             <label>Password</label>
-            <input type="password" id="password" placeholder="Create a password"
-                   autocomplete="new-password" oninput="checkPwCriteria()" />
+            <span class="input-wrapper">
+                <input type="password" id="password" placeholder="Create a password"
+                    autocomplete="new-password" oninput="checkPwCriteria()" />
+                <span class="toggle-icon">👀</span>
+            </span>
         </div>
 
         <!-- Live criteria checker -->
@@ -40,9 +43,12 @@
 
         <div class="auth-field">
             <label>Confirm Password</label>
-            <input type="password" id="confirm-password" placeholder="Confirm your password"
-                   autocomplete="new-password"
-                   onkeydown="if(event.key==='Enter') handleSignup()" />
+            <span class="input-wrapper">
+                <input type="password" id="confirm-password" placeholder="Confirm your password"
+                       autocomplete="new-password"
+                       onkeydown="if(event.key==='Enter') handleSignup()" />
+                <span class="toggle-icon">👀</span>
+            </span>
         </div>
 
         <button class="auth-btn" onclick="handleSignup()">Create Account</button>

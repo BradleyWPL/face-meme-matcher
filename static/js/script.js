@@ -2,7 +2,6 @@
 
 // script code to handle non-engine and app functionality
 
-
 console.log("Script loaded successfully!");
 
 
@@ -21,10 +20,10 @@ toggles.forEach(toggle => {
 
         if (input.type === 'password') {
             input.type = 'text';
-            toggle.textContent = '👀';
+            toggle.textContent = '😎';
         } else {
             input.type = 'password';
-            toggle.textContent = '😎';
+            toggle.textContent = '👀';
         }
     });
 });
