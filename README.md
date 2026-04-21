@@ -12,3 +12,4 @@ Meme Me lives in your browser!
 
 ### Getting Started!
 
+## Install the necessary dependcies through

@@ -20,10 +20,10 @@ toggles.forEach(toggle => {
 
         if (input.type === 'password') {
             input.type = 'text';
-            toggle.textContent = '😎';
+            toggle.textContent = '👀';
         } else {
             input.type = 'password';
-            toggle.textContent = '👀';
+            toggle.textContent = '😎';
         }
     });
 });
