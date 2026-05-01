@@ -1,3 +1,32 @@
+<!--
+=============================================================================
+FILE: login.html
+PROJECT: Face Meme Matcher — Meme Me
+=============================================================================
+DESCRIPTION:
+  Login page. Collects user email and password, authenticates via Firebase
+  Auth through auth.js, and provides navigation to the signup page.
+
+IPO BREAKDOWN:
+  INPUT:
+    User-entered email and password in form fields
+    Firebase Auth via auth.js login() function
+    sessionStorage for bypass login detection
+
+  PROCESSING:
+    Renders email input, password input, and Login button
+    Calls auth.js login() on submit — handles Firebase signIn and bypass
+    Renders Create an Account link navigating to /signup
+    Displays inline error messages for invalid credentials
+    Loads auth.css for page-specific styles
+
+  OUTPUT:
+    Authenticated session stored, redirect to /meme-me on success
+    Error message displayed on invalid login attempt
+    Navigation to /signup for new users
+=============================================================================
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

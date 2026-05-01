@@ -1,4 +1,37 @@
-// history.js — clean rewrite
+// =============================================================================
+// FILE: history.js
+// PROJECT: Face Meme Matcher — Meme Me
+// =============================================================================
+// DESCRIPTION:
+//   Loads and renders the user's personal meme history gallery. Authenticates
+//   via Firebase Auth, fetches memeHistory collection from Firestore, and
+//   dynamically builds image cards for each saved meme.
+//
+// IPO BREAKDOWN:
+//   INPUT:
+//     Firebase Auth session — onAuthStateChanged resolves current user
+//     Firestore collection: users/{uid}/memeHistory ordered by savedAt desc
+//     Each document: imageUrl (Storage URL), memeName (string),
+//       savedAt (Timestamp)
+//
+//   PROCESSING:
+//     Wraps auth.onAuthStateChanged in a Promise to await user confirmation
+//     Redirects to /login if no authenticated user found
+//     Updates sessionStorage with fresh Firebase Auth user data
+//     Queries Firestore memeHistory ordered by savedAt desc using .get()
+//     Iterates snapshot docs and builds .history-card div elements per entry
+//     Formats savedAt Timestamp to readable date via toDate().toLocaleDateString()
+//     Renders <img> if imageUrl exists, placeholder div if empty
+//     Shows empty state message if snapshot has zero documents
+//     Catches and displays Firestore errors inline in the grid
+//
+//   OUTPUT:
+//     History grid populated with cards: image, meme name, save date
+//     User email displayed in header via #user-email-display
+//     Empty state message if no memes saved yet
+//     Error message in grid if Firestore query fails
+//     Redirect to /login if session is invalid or expired
+// =============================================================================
 async function loadHistory() {
   const grid = document.getElementById('history-grid');
   if (!grid) return;

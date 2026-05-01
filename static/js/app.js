@@ -1,6 +1,52 @@
-// ============================================
-// FACE MEME MATCHER — app.js
-// ============================================
+// =============================================================================
+// FILE: app.js
+// PROJECT: Face Meme Matcher — Meme Me
+// =============================================================================
+// DESCRIPTION:
+//   Core application engine. Loads face-api.js AI models, runs real-time
+//   webcam facial landmark detection, scores expressions against stored meme
+//   pose data, and drives the game mode system with JoyCoins.
+//
+// IPO BREAKDOWN:
+//   INPUT:
+//     Live webcam video stream via navigator.mediaDevices.getUserMedia()
+//     face-api.js TinyFaceDetector + FaceLandmark68Net model weights
+//       from /static/models/
+//     6 meme pose definitions with match functions:
+//       Cat Smile, Reading Meme, Scared Guy, Squint Pucker,
+//       Confused Dog, Thinking Guy
+//     68 facial landmark position points from face-api.js detection results
+//     User interaction: gallery carousel arrows, game mode start button
+//     JoyCoins balance loaded from Firestore on page load
+//
+//   PROCESSING:
+//     loadModels(): fetches TinyFaceDetector and FaceLandmark68 model weights
+//     startCamera(): opens webcam stream, pipes to <video> element
+//     extractFeatures(): computes from 68 landmark positions —
+//       EAR (Eye Aspect Ratio), mouthRatio, lipGap, browLow, headTilt
+//     findBestMatch(): iterates MEME_POSES, returns first meme whose
+//       match() function evaluates true against live features
+//     runDetection(): setInterval loop at 200ms — detect → extract →
+//       match → update UI
+//     Sticky hold: lastMatch persists on screen for HOLD_MS (2000ms)
+//       after pose is released
+//     changeSlide(): cycles gallery carousel, updates instruction text
+//     Game Mode: countdown → nextPose() picks random meme →
+//       checkGamePose() validates match → score++ → endGame() awards coins
+//     saveJoyCoins(): writes updated joyCoins total to Firestore users/{uid}
+//     downloadSnapshot(): canvas capture → Firebase Storage upload →
+//       Firestore metadata save
+//
+//   OUTPUT:
+//     Live meme match displayed in #meme-display, updated every 200ms
+//     #meme-label updated with matched meme name or 'Strike a pose!'
+//     #match-status indicator showing detection state
+//     Gallery carousel showing meme image + pose instructions
+//     Game overlay with countdown, prompts, score, timer bar
+//     Game end modal with final score and JoyCoins earned
+//     #joy-coins-display updated in real time
+//     Meme snapshot downloaded locally and saved to Firebase
+// =============================================================================
 
 const video       = document.getElementById('video');
 const memeDisplay = document.getElementById('meme-display');

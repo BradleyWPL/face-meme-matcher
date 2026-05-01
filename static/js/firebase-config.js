@@ -1,7 +1,27 @@
-// firebase-config.js
-// IMPORTANT: Use ONE consistent config for your entire app.
-// Your Firebase project has TWO registered web apps (image-storage and login page).
-// We use the ORIGINAL one that matches your existing users collection.
+// =============================================================================
+// FILE: firebase-config.js
+// PROJECT: Face Meme Matcher — Meme Me
+// =============================================================================
+// DESCRIPTION:
+//   Initializes the Firebase client SDK in the browser. Exposes auth, db,
+//   and storage objects used by all other JS files.
+//
+// IPO BREAKDOWN:
+//   INPUT:
+//     Firebase project config object (apiKey, authDomain, projectId,
+//     storageBucket, etc.)
+//     Firebase compat SDK scripts loaded via <script> tags in each HTML file
+//
+//   PROCESSING:
+//     Calls firebase.initializeApp(firebaseConfig) with project credentials
+//     Instantiates firebase.auth(), firebase.firestore(), firebase.storage()
+//     Assigns them to global constants: auth, db, storage
+//
+//   OUTPUT:
+//     auth   — Firebase Authentication instance for login/logout/session
+//     db     — Firestore database client for reading and writing user data
+//     storage — Firebase Storage client for uploading meme snapshot images
+// =============================================================================
 
 const firebaseConfig = {
   apiKey:            "AIzaSyBEUYfN77dXMNNCfmBhIm3VQIGX59ogviM",

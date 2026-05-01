@@ -1,3 +1,31 @@
+<!--
+=============================================================================
+FILE: signup.html
+PROJECT: Face Meme Matcher - Meme Me
+=============================================================================
+DESCRIPTION:
+  Account creation page. Collects new user email, password, and password
+  confirmation. Validates match and creates Firebase Auth account via auth.js.
+
+IPO BREAKDOWN:
+  INPUT:
+    User-entered email, password, and confirm password fields
+    Firebase Auth via auth.js signup() function
+
+  PROCESSING:
+    Renders email, password, and confirm password fields
+    Calls auth.js signup() on submit , validates password match first
+    Displays error if passwords do not match or email already exists
+    Creates Firestore user document on successful signup
+
+  OUTPUT:
+    New Firebase Auth user account created
+    Firestore doc initialized: users/{uid} with email, createdAt, joyCoins:0
+    Redirect to /meme-me on successful account creation
+    Inline error for validation or Firebase errors
+=============================================================================
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,3 +1,31 @@
+# =============================================================================
+# FILE: app.py
+# PROJECT: Face Meme Matcher — Meme Me
+# =============================================================================
+# DESCRIPTION:
+#   Flask server entry point. Initializes the app, registers all routes,
+#   and serves HTML templates to the browser.
+#
+# IPO BREAKDOWN:
+#   INPUT:
+#     HTTP GET requests from the browser (/, /login, /meme-me, /history, /signup)
+#     serviceAccountKey.json for Firebase Admin SDK initialization
+#     template_folder and static_folder paths for Flask to locate assets
+#
+#   PROCESSING:
+#     Initializes Flask with custom template_folder (../templates)
+#     and static_folder (../static)
+#     Imports firebase.py to establish Firebase Admin connection on startup
+#     Registers route handlers: index(), login(), meme_me(), history_page(), signup()
+#     render_template() resolves each route to its corresponding HTML file
+#     Runs Flask dev server on port 5000 with debug=True
+#
+#   OUTPUT:
+#     Rendered HTML pages delivered to the browser for each route
+#     Flask development server running at http://localhost:5000
+#     All static assets (JS, CSS, images) served from /static/ path
+# =============================================================================
+
 import os
 from flask import Flask, render_template
 from flask_cors import CORS

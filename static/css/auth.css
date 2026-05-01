@@ -1,4 +1,28 @@
+/* =============================================================================
+   FILE: auth.css
+   PROJECT: Face Meme Matcher — Meme Me
+   =============================================================================
+   DESCRIPTION:
+     Styles specific to the login and signup pages. Defines the centered card
+     layout, input fields, buttons, and error message display.
 
+   IPO BREAKDOWN:
+     INPUT:
+       Loaded via <link> in login.html and signup.html
+
+     PROCESSING:
+       Centers auth card vertically and horizontally using flexbox
+       Styles .auth-card with glassmorphism (backdrop-filter blur)
+       Styles input fields with dark background, white text, purple focus ring
+       Styles submit button with purple gradient and hover scale transform
+       Styles .error-msg hidden by default, shown by auth.js on error
+
+     OUTPUT:
+       Centered login/signup card on dark background
+       Purple focus ring on active input fields
+       Submit button with hover animation
+       Inline error messages on failed authentication
+   ============================================================================= */
 /* Main color palette for Meme Me, use variables for easy changes */
 
 :root {

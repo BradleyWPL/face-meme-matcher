@@ -1,3 +1,34 @@
+/* =============================================================================
+   FILE: style.css
+   PROJECT: Face Meme Matcher — Meme Me
+   =============================================================================
+   DESCRIPTION:
+     Main application stylesheet for meme-me.html. Defines the three-panel
+     layout, camera/meme panels, gallery carousel, game mode overlay,
+     game end modal, and all interactive UI elements.
+
+   IPO BREAKDOWN:
+     INPUT:
+       Loaded via <link> in meme-me.html
+
+     PROCESSING:
+       Full-viewport no-scroll layout via overflow:hidden on html/body
+       Three-panel grid: camera (left), controls (center), meme (right)
+       Hides landmark canvas overlay (#landmark-canvas display:none)
+       Styles gallery carousel: prev/next buttons, image, label
+       Styles game overlay: fullscreen flex, countdown, timer bar, prompt
+       Styles game end modal: centered card with score and JoyCoins
+       Styles .match-status dot (gray inactive / green active)
+       Styles Download Match and Meme History buttons in center column
+
+     OUTPUT:
+       Three-panel app layout filling full viewport with no scroll
+       Camera and meme panels displaying full-size media
+       Gallery carousel cycling memes with labels and instructions
+       Game overlay animating with countdown and timer bar
+       Game end modal centered with final score display
+   ============================================================================= */
+
 /* Base styles - Hager builds on this */
 
 /* Main color palette for Meme Me, use variables for easy changes */

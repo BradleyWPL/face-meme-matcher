@@ -1,10 +1,35 @@
-// ── auth.js ───────────────────────────────────────────────────────────────
-// KEY FIX: Firebase Firestore security rules use request.auth on the SERVER.
-// For request.auth to be non-null, the browser must have an active Firebase
-// Auth session  not just a sessionStorage entry. This file sets persistence
-// to LOCAL so the auth token survives page navigations and browser refreshes.
-
-
+// =============================================================================
+// FILE: auth.js
+// PROJECT: Face Meme Matcher — Meme Me
+// =============================================================================
+// DESCRIPTION:
+//   Handles all Firebase Authentication operations: login, signup, logout,
+//   and session guard. Redirects unauthenticated users to the login page.
+//
+// IPO BREAKDOWN:
+//   INPUT:
+//     User email and password from login/signup HTML form fields
+//     Firebase auth object from firebase-config.js
+//     sessionStorage for caching user session data across pages
+//     Bypass credentials: username=1 / password=1 for demo access
+//
+//   PROCESSING:
+//     login(): calls auth.signInWithEmailAndPassword(), stores user in
+//       sessionStorage, redirects to /meme-me
+//     signup(): validates password match, calls createUserWithEmailAndPassword(),
+//       saves user doc to Firestore
+//     logout(): calls auth.signOut(), clears sessionStorage, redirects to /login
+//     Session guard: checks sessionStorage on protected pages, redirects if empty
+//     Bypass check: if email===1 and password===1, sets bypass session flag
+//     onAuthStateChanged keeps sessionStorage in sync with Firebase Auth state
+//
+//   OUTPUT:
+//     Authenticated user session stored in sessionStorage as {email, uid}
+//     Redirect to /meme-me on successful login or signup
+//     Redirect to /login on logout or failed session guard
+//     New user doc in Firestore: users/{uid} with email, createdAt, joyCoins:0
+//     Inline error messages for invalid credentials or mismatched passwords
+// =============================================================================
 
 // ── LOGIN ─────────────────────────────────────
 async function handleLogin() {

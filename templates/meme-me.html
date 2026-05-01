@@ -1,3 +1,41 @@
+<!--
+=============================================================================
+FILE: meme-me.html
+PROJECT: Face Meme Matcher — Meme Me
+=============================================================================
+DESCRIPTION:
+  Main application page. Houses the three-panel layout (camera, meme match,
+  gallery), game mode overlay, game end modal, and all interactive controls.
+  Loads face-api.js and all application scripts.
+
+IPO BREAKDOWN:
+  INPUT:
+    Authenticated user session (redirected to login if missing)
+    Live webcam stream via app.js startCamera()
+    face-api.js CDN script for AI model inference
+    User clicks: Download Match, Meme History, Logout, Game Mode, Gallery arrows
+
+  PROCESSING:
+    Renders three-panel layout: camera, meme match, gallery
+    Loads firebase-config.js, auth.js, app.js, script.js in correct order
+    app.js boots on page load — loads models, starts camera, begins detection
+    Gallery carousel controlled by changeSlide() in app.js
+    Game overlay shown/hidden by showOverlay() during game mode
+    Game end modal shown by endGame() with score and JoyCoins
+    Download button triggers downloadSnapshot() in app.js
+
+  OUTPUT:
+    Live camera feed in left panel
+    Matched meme image in right panel updated every 200ms
+    Meme name label and match status updated in real time
+    Gallery carousel cycling meme images with pose instructions
+    Game overlay animating with countdown, prompt, score, timer bar
+    JoyCoins display updated during and after game
+    Meme snapshot downloaded and saved to Firebase on button click
+=============================================================================
+-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

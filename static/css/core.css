@@ -1,4 +1,27 @@
+/* =============================================================================
+   FILE: core.css
+   PROJECT: Face Meme Matcher — Meme Me
+   =============================================================================
+   DESCRIPTION:
+     Shared base stylesheet applied across all pages. Defines global resets,
+     typography, background gradient, and common utility classes.
 
+   IPO BREAKDOWN:
+     INPUT:
+       Loaded via <link> in all HTML template files
+
+     PROCESSING:
+       CSS reset: box-sizing border-box, margin/padding 0 on all elements
+       Sets html/body to full height, dark purple background (#12102a)
+       Imports Fredoka One and Nunito Google Fonts for brand typography
+       Defines radial gradient overlays via body::before pseudo-element
+       Establishes base font-family and color as white on all body text
+
+     OUTPUT:
+       Consistent dark purple base appearance across all pages
+       Google Fonts available globally
+       No default browser margin/padding interference
+   ============================================================================= */
 /* Main color palette for Meme Me, use variables for easy changes */
 
 :root {

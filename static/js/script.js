@@ -1,4 +1,40 @@
-// ── script.js ─────────────────────────────────────────────────────────────
+// =============================================================================
+// FILE: script.js
+// PROJECT: Face Meme Matcher — Meme Me
+// =============================================================================
+// DESCRIPTION:
+//   Handles the Download Match button. Captures the live camera and matched
+//   meme side-by-side onto an HTML canvas, uploads the image to Firebase
+//   Storage, and saves the metadata record to Firestore meme history.
+//
+// IPO BREAKDOWN:
+//   INPUT:
+//     Click event on #download-button element
+//     auth.currentUser — authenticated Firebase user (secure, not sessionStorage)
+//     Live <video> element with active webcam stream
+//     #meme-display image element with current matched meme
+//     #meme-label text content for the meme name
+//
+//   PROCESSING:
+//     Validates camera is ready (video.videoWidth > 0)
+//     Checks auth.currentUser — blocks save if not logged in
+//     Creates canvas sized at video.videoWidth * 2 x video.videoHeight
+//     Draws webcam frame on left half, meme image on right half
+//     Converts canvas to Blob via canvas.toBlob() for binary upload
+//     Uploads blob to Firebase Storage: memeHistory/{uid}/{timestamp}.png
+//     Retrieves public download URL via storageRef.getDownloadURL()
+//     Writes Firestore doc to users/{uid}/memeHistory with imageUrl,
+//       memeName, savedAt server timestamp
+//     Triggers local file download via programmatic <a> click
+//     Updates button state: Saving → Saved! → reset after 2.5 seconds
+//
+//   OUTPUT:
+//     Side-by-side PNG image downloaded to user's local device
+//     Image stored in Firebase Storage: memeHistory/{uid}/{timestamp}.png
+//     Firestore doc created in users/{uid}/memeHistory
+//     Button visual feedback ( Saving →  Saved! → reset)
+//     Error alert with Firebase error code if upload or write fails
+// =============================================================================
 
 // script code to handle non-engine and app functionality
 

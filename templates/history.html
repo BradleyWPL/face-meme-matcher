@@ -1,3 +1,36 @@
+<!--
+=============================================================================
+FILE: history.html
+PROJECT: Face Meme Matcher — Meme Me
+=============================================================================
+DESCRIPTION:
+  Meme history gallery page. Displays all saved meme snapshots for the
+  logged-in user. Loads history.js which queries Firestore and dynamically
+  renders image cards.
+
+IPO BREAKDOWN:
+  INPUT:
+    Authenticated Firebase user session
+    Firestore memeHistory collection for the current user
+    history.js loadHistory() function called on page load
+
+  PROCESSING:
+    Renders sticky header with brand, user email, Back, and Logout buttons
+    Renders #history-grid div populated dynamically by history.js
+    Loads firebase-config.js, auth.js, history.js scripts in order
+    history.js fetches Firestore docs and builds history-card elements
+    Shows loading state until Firestore query resolves
+
+  OUTPUT:
+    Grid of meme history cards with image, meme name, and save date
+    Empty state message if no memes saved
+    Error message if Firestore query fails
+    Back button navigates to /meme-me
+    Logout clears session and redirects to /login
+=============================================================================
+-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

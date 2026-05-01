@@ -1,3 +1,31 @@
+/* =============================================================================
+   FILE: history.css
+   PROJECT: Face Meme Matcher — Meme Me
+   =============================================================================
+   DESCRIPTION:
+     Styles specific to the meme history page. Defines the sticky header,
+     scrollable grid layout, and history card appearance.
+
+   IPO BREAKDOWN:
+     INPUT:
+       Loaded via <link> in history.html
+
+     PROCESSING:
+       Styles .history-header as sticky top bar with blur backdrop
+       Styles .history-wrapper with max-width centering and padding
+       Defines #history-grid as CSS grid auto-fill columns (minmax 220px)
+       Styles .history-card with purple background, border-radius, shadow
+       Adds hover lift animation (translateY -4px) on .history-card
+       Defines @keyframes fadeIn for staggered card entrance animation
+       Styles .state-msg for loading/empty/error states in grid center
+
+     OUTPUT:
+       Sticky branded header visible while scrolling
+       Responsive card grid adapting to screen width
+       Cards animating in with staggered fade-in effect
+       Meme images full-width inside each card
+       Loading, empty, and error states rendered cleanly
+   ============================================================================= */
 /* Main color palette for Meme Me, use variables for easy changes */
 
 :root {
