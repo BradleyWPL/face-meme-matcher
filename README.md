@@ -58,11 +58,13 @@ pip install -r requirements.txt
 ### 2. Get your serviceAccountKey.json
 - Project Settings → Service Accounts → **Generate new private key**
 - Save the file as `serviceAccountKey.json` inside the `backend/` folder
-- ⚠️ Never commit this file — it's already in `.gitignore`
+- ⚠️ Never commit this file,  it's already ignored in `.gitignore`
 
 ### 3. Set your Firestore Rules
+
 Go to **Firestore → Rules** and paste this:
 
+```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -74,7 +76,7 @@ service cloud.firestore {
     }
   }
 }
-
+```
 
 ### 4. Set your Storage Rules
 Go to **Storage → Rules** and paste this:
@@ -112,7 +114,7 @@ http://localhost:5001
 
 1. Create an account
 2. Allow camera access when prompted
-3. Make a face — the app will match you to a meme
+3. Make a face, the app will match you to a meme!
 4. Hit **Download Match** to save your moment
 5. Check **Meme History** to see all your past matches
 
