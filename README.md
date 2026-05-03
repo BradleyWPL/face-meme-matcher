@@ -1,4 +1,8 @@
-# Meme Me — Face Meme Matcher 🎭😂
+<div align="center">
+    <img src="./static/resources/images/meme-me-logo.png" height="150" text-align="center">
+</div>
+
+# Meme Me — Face Meme Matcher 🎭😆 
 
 > Don't just send memes — **become** the meme.
 
@@ -14,7 +18,10 @@ Meme Me uses your webcam and AI to match your live facial expressions to iconic 
 
 ---
 
-## Setup (5 steps) excluding fire base set up for ServiceAccount.js Key.
+## Getting Started
+
+Setup (5 steps) exlcuding fire base set up for ServiceAccount.js Key.
+
 
 **1. Clone the repo**
 ```bash
@@ -72,6 +79,7 @@ service cloud.firestore {
 ### 4. Set your Storage Rules
 Go to **Storage → Rules** and paste this:
 
+```
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -80,6 +88,7 @@ service firebase.storage {
     }
   }
 }
+```
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -129,5 +138,16 @@ You must generate your own from Firebase (Step 4 above). It takes 2 minutes.
 
 ---
 
-Made with joy from **Particularly Kool Joy Coders** 😎
+## Tools
+
+- [Python](https://python.org/downloads) 
+- [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) 
+- [Git](https://git-scm.com/downloads)
+- [Firebase/Firstore](https://firebase.google.com/)
+
+
+--- 
+
+##### Made with joy from **Particularly Kool Joy Coders** 😎
+
 CSIS 3750 — Software Engineering
