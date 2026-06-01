@@ -34,6 +34,8 @@ from services.firebase import db
 # get absolute paths so you can run app from anywhere
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+port = int(os.environ.get('PORT', 5002))
+
 # init flask app, tell it where templates and static files are
 app = Flask(
     __name__,
@@ -95,5 +97,5 @@ def test_firebase():
 # run the server
 if __name__ == '__main__':
     # debug=True for dev so you see errors in console
-    # port 5000 is default for Flask, can change if needed
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    # port 5000 is default for Flask, can change if needed in port variable above
+    app.run(debug=True, host='0.0.0.0', port=port)
