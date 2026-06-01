@@ -1,8 +1,10 @@
 serviceAccountKey.json
 venv/
-__pycache__
+__pycache__/
 __pycache__/*
-*.pyc
+/pycache/*
+*.py[cod]
+*$py.class
 .DS_Store
 .vscode/
 .env
