@@ -30,11 +30,16 @@ import os
 from flask import Flask, render_template
 from flask_cors import CORS
 from services.firebase import db
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # get absolute paths so you can run app from anywhere
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-port = int(os.environ.get('PORT', 5002))
+# load environment variables from .env file, with fallback set to 5000 if PORT is not defined
+port = int(os.environ.get('PORT', 5000)) 
 
 # init flask app, tell it where templates and static files are
 app = Flask(
