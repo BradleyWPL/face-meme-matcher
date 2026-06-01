@@ -22,12 +22,22 @@
 #     Secure server-side Firebase connection ready for Firestore operations
 # =============================================================================
 
+import json
+import os
 import firebase_admin
 from firebase_admin import credentials, firestore
-import os
+from dotenv import load_dotenv
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-cred = credentials.Certificate(os.path.join(BASE_DIR, "serviceAccountKey.json"))
+load_dotenv()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
+
+key_path = os.environ.get("FIREBASE_KEY_PATH", "serviceAccountKey.json")  # Fallback to serviceAccountKey.json 
+
+cred = credentials.Certificate(
+    os.path.join(BASE_DIR, key_path)
+)
+
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()

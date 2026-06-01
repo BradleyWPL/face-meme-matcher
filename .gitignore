@@ -8,3 +8,4 @@ __pycache__/*
 .DS_Store
 .vscode/
 .env
+backend/base64-service.txt
